@@ -102,4 +102,33 @@ public class ArticoliController
 
 			return new ResponseEntity<Articoli>(articolo, HttpStatus.OK);
 		}
+
+			// ------------------- Search By Description ------------------------------------
+			/*
+			 * this code is an API endpoint that handles HTTP GET requests to retrieve a list of items from a database
+			 * based on their description. It retrieves all matching items in one request.
+			 * If no items are found for the provided description filter, it throws a NotFoundException.
+			 * Otherwise, it returns the list of items in JSON format as the response.
+			 */
+			@RequestMapping(value = "/cerca/descrizione/{filter}", method = RequestMethod.GET, produces = "application/json")
+			public ResponseEntity<List<Articoli>> listArtByDesc(@PathVariable("filter") String Filter)
+					throws NotFoundException
+			{
+				logger.info("****** We get the items with Description: " + Filter + " *******");
+
+				List<Articoli> articoli = articoliService.SelByDescrizione(Filter + "%");
+
+				if (articoli == null)
+				{
+					String ErrMsg = String.format("No item with description %s was found", Filter);
+
+					logger.warn(ErrMsg);
+
+					throw new NotFoundException(ErrMsg);
+
+				}
+
+				return new ResponseEntity<List<Articoli>>(articoli, HttpStatus.OK);
+			}
+
 }
