@@ -76,4 +76,30 @@ public class ArticoliController
 		return new ResponseEntity<Articoli>(articolo, HttpStatus.OK);
 	}
 
+		// ------------------- Search By Code ------------------------------------
+		/*
+		 * this code is an API endpoint that handles HTTP GET requests to retrieve a single item from a database
+		 * based on its unique code.
+		 * If the item with the provided code is found, it returns the item in JSON format as the response with
+		 * status code 200 OK. If the item is not found, it throws a NotFoundException with an appropriate error message.
+		 */
+		@RequestMapping(value = "/cerca/codice/{codart}", method = RequestMethod.GET, produces = "application/json")
+		public ResponseEntity<Articoli> listArtByCodArt(@PathVariable("codart") String CodArt)
+				throws NotFoundException
+		{
+			logger.info("****** We get the article with code " + CodArt + " *******");
+
+			Articoli articolo = articoliService.SelByCodArt(CodArt);
+
+			if (articolo == null)
+			{
+				String ErrMsg = String.format("The article with code %s was not found!", CodArt);
+
+				logger.warn(ErrMsg);
+
+				throw new NotFoundException(ErrMsg);
+			}
+
+			return new ResponseEntity<Articoli>(articolo, HttpStatus.OK);
+		}
 }
