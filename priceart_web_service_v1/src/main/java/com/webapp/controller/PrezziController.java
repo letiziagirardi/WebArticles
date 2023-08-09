@@ -65,7 +65,7 @@ public class PrezziController
 	 * and then returns the price if it's found.
 	 * If the pricing details are not available, it logs a warning message and returns a default value of 0.
 	 */
-	
+
 	public double getPriceCodArt(@ApiParam("Code Article") @PathVariable("codart") String CodArt)  
 	{
 		double retVal = 0;
@@ -89,4 +89,37 @@ public class PrezziController
 
 		return retVal;
 	}
+
+	/*
+	 * The `getListCodArt` method is used to fetch and provide pricing details for a particular article identified by its unique code.
+	 * It communicates with a pricing service, handles potential errors, and returns the details as a JSON response entity. 
+	 * The method constructs an HTTP response entity that will contain the pricing details of the requested article. 
+	 * If the details are missing, it logs a warning and throws an exception with an appropriate error message.
+	 */
+    @RequestMapping(value = "/cerca/codice/{codart}", method = RequestMethod.GET)
+    public ResponseEntity<DettListini> getListCodArt(@PathVariable("codart") String CodArt)  
+        throws NotFoundException
+    {
+        HttpHeaders headers = new HttpHeaders();
+    
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        
+        String IdList = Config.getListino();
+        
+        logger.info("Reference Price List: " + IdList);
+        
+        DettListini dettListini =  prezziService.SelPrezzo(CodArt, IdList);
+        
+        if (dettListini == null)
+        {
+            String ErrMsg = String.format("The %s list price of the code %s was not found!", IdList, CodArt);
+            
+            logger.warn(ErrMsg);
+            
+            throw new NotFoundException(ErrMsg);
+        }
+        
+        return new ResponseEntity<DettListini>(dettListini, HttpStatus.OK);
+            
+    }
 }
