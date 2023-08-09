@@ -65,6 +65,7 @@ public class PrezziController
 	 * and then returns the price if it's found.
 	 * If the pricing details are not available, it logs a warning message and returns a default value of 0.
 	 */
+	
 	public double getPriceCodArt(@ApiParam("Code Article") @PathVariable("codart") String CodArt)  
 	{
 		double retVal = 0;
