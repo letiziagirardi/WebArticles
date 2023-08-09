@@ -15,4 +15,5 @@ public interface PrezziRepository extends JpaRepository<DettListini, Long>
 	@Modifying
 	@Query(value = "DELETE FROM dettlistini WHERE CodArt = :codart AND IdList = :idlist", nativeQuery = true)
 	void DelRowDettList(@Param("codart") String CodArt, @Param("idlist") String IdList);
+
 }

@@ -122,4 +122,47 @@ public class PrezziController
         return new ResponseEntity<DettListini>(dettListini, HttpStatus.OK);
             
     }
+
+	/*
+	 * The `createPrice` method is used to create new pricing entries in the database. 
+	 * It validates the input, logs relevant information, inserts data, returns a response indicating the success of the operation,
+	 *  and logs the success message again. 
+	*/
+
+    @RequestMapping(value = "/inserisci", method = RequestMethod.POST)
+    public ResponseEntity<DettListini> createPrice(@Valid @RequestBody DettListini dettListini, BindingResult bindingResult,
+            UriComponentsBuilder ucBuilder) 
+            throws BindingException 
+    {
+		logger.info("--- DettListini Details:");
+		logger.info("CodArt: {}", dettListini.getCodArt());
+		logger.info("Prezzo: {}", dettListini.getPrezzo());
+		logger.info("IdList: {}", dettListini.getIdList());
+
+
+        logger.info(String.format("We save the %s price of the %s item", dettListini.getPrezzo(),  dettListini.getCodArt()));
+        
+        if (bindingResult.hasErrors())
+        {
+            String MsgErr = errMessage.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
+            
+            logger.warn(MsgErr);
+
+            throw new BindingException(MsgErr);
+        }
+         
+        HttpHeaders headers = new HttpHeaders();
+        ObjectMapper mapper = new ObjectMapper();
+        
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ObjectNode responseNode = mapper.createObjectNode();
+
+        prezziService.InsPrezzo(dettListini);
+        
+        responseNode.put("code", HttpStatus.OK.toString());
+        responseNode.put("message", "Price entry " + dettListini.getPrezzo() + " Executed Successfully");
+		logger.info( "Price entry " + dettListini.getPrezzo() + " Executed Successfully");
+        return new ResponseEntity<DettListini>(headers, HttpStatus.CREATED);
+    }
 }
