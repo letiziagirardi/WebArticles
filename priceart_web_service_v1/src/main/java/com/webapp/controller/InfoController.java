@@ -15,6 +15,9 @@ public class InfoController
 	@Autowired
 	private AppConfig configuration;
 
+	/*
+	 * This method provides a simple endpoint that can be used to retrieve the value of the "listino" configuration setting. 
+	 */
 	@RequestMapping("/info")
 	public Map<String, String> getInfo()
 	{
