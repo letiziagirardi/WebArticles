@@ -159,10 +159,40 @@ public class PrezziController
         ObjectNode responseNode = mapper.createObjectNode();
 
         prezziService.InsPrezzo(dettListini);
-        
+
+		
+		logger.info( "Price entry " + dettListini.getPrezzo() + " Executed Successfully");
         responseNode.put("code", HttpStatus.OK.toString());
         responseNode.put("message", "Price entry " + dettListini.getPrezzo() + " Executed Successfully");
-		logger.info( "Price entry " + dettListini.getPrezzo() + " Executed Successfully");
-        return new ResponseEntity<DettListini>(headers, HttpStatus.CREATED);
+		        
+		return new ResponseEntity<DettListini>(headers, HttpStatus.CREATED);
     }
+
+
+	/*
+	 * This `deletePrice` method is used to delete of a pricing entry from the database based on the provided CodArt and IdList. 
+	 * It logs the operation, performs the deletion, generates a success response message, and returns a response entity with the success message. 
+	 * This code is part of a RESTful API and follows the HTTP DELETE method convention for resource deletion.
+	 */
+    @RequestMapping(value = "/elimina/{codart}/{idlist}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deletePrice(@PathVariable("codart") String CodArt, @PathVariable("idlist") String IdList)
+    {
+        logger.info(String.format("Elimination of list price %s of item %s",IdList,CodArt));
+
+        HttpHeaders headers = new HttpHeaders();
+        ObjectMapper mapper = new ObjectMapper();
+
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ObjectNode responseNode = mapper.createObjectNode();
+
+        prezziService.DelPrezzo(CodArt, IdList);
+
+        logger.info("Removal Successfully Successful");
+		responseNode.put("code", HttpStatus.OK.toString());
+        responseNode.put("message", "Removal Successfully Successful");
+
+        return new ResponseEntity<>(responseNode, headers, HttpStatus.OK);
+    }
+
 }
