@@ -122,4 +122,39 @@ public class PromoController
         return new ResponseEntity<Promo>(headers, HttpStatus.CREATED);
     }
 
+	/*
+	 * 
+	 */
+	@RequestMapping(value = "/elimina/{idpromo}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deletePromo(@PathVariable("idpromo") String IdPromo) 
+            throws NotFoundException
+    {
+        logger.info("Deleting the promo with id " + IdPromo);
+
+        HttpHeaders headers = new HttpHeaders();
+        ObjectMapper mapper = new ObjectMapper();
+
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ObjectNode responseNode = mapper.createObjectNode();
+
+        Promo promo = promoService.SelByIdPromo(IdPromo);
+
+        if (promo == null)
+        {
+            String ErrMsg = "ERROR: Cannot find promo with id " + IdPromo;
+            
+            logger.warn(ErrMsg);
+             
+            throw new NotFoundException(ErrMsg);
+        }
+
+        promoService.DelPromo(promo);
+
+        responseNode.put("code", HttpStatus.OK.toString());
+        responseNode.put("message", "Promotion Deletion " + IdPromo + " Executed Successfully ");
+
+        return new ResponseEntity<>(responseNode, headers, HttpStatus.OK);
+    }
+
 }
