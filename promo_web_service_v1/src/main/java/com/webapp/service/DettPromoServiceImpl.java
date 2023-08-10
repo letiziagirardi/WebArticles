@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +19,6 @@ public class DettPromoServiceImpl implements DettPromoService
 	private DettPromoRepository dettPromoRepository;
 		
 	@Override
-	@Cacheable(value = "przpromo_cache",sync = true)
 	public List<DettPromo> SelDettPromoByCodFid(String CodFid)
 	{
 		List<DettPromo> retVal = dettPromoRepository.findDettPromoActive()
@@ -33,7 +31,6 @@ public class DettPromoServiceImpl implements DettPromoService
 	}
 	
 	@Override
-	@Cacheable(value = "przpromo_cache",sync = true)
 	public List<DettPromo> SelDettPromoByCode(String Codice)
 	{
 		List<DettPromo> retVal = dettPromoRepository.findDettPromoActive()

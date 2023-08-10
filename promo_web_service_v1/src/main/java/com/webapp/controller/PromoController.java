@@ -123,7 +123,8 @@ public class PromoController
     }
 
 	/*
-	 * 
+	 * The deletePromo method handles the deletion of a specific promotional offer from the database, 
+	 * providing a response with appropriate status, headers, and a JSON message indicating the outcome of the deletion.
 	 */
 	@RequestMapping(value = "/elimina/{idpromo}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deletePromo(@PathVariable("idpromo") String IdPromo) 
