@@ -39,27 +39,59 @@ public class PromoController
 
 	@Autowired
 	private ResourceBundleMessageSource errMessage;
+
+	/*
+	 * The 'listAllPromo' method handles retrieving a list of promotional offers from the database, 
+	 * dealing with cases where no offers are found. 
+	 */
 		
 	@RequestMapping(value = "/cerca/tutti", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<List<Promo>> listAllPromo()
 			throws NotFoundException
 	{           
-		logger.info("****** Otteniamo tutte le promozioni *******");
+		logger.info("****** We get all promotions *******");
 
 		List<Promo> promo = promoService.SelTutti();
 
 		if (promo.isEmpty())
 		{
-			String ErrMsg = String.format("Non è stata trovata alcuna promozione!");
+			String ErrMsg = String.format("No promotion found!");
 			
 			logger.warn(ErrMsg);
 			
 			throw new NotFoundException(ErrMsg);
 		}
 
-		logger.info("Numero dei record: " + promo.size());
+		logger.info("Number of records: " + promo.size());
 		
 		return new ResponseEntity<List<Promo>>(promo, HttpStatus.OK);
 	}
+
+
+	/*
+	 *  The 'listPromoById' method handles retrieving a specific promotional offer from the database based on its ID, 
+	 * dealing with cases where no offer is found.
+	 */
+
+    @RequestMapping(value = "/cerca/id/{idpromo}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<Promo> listPromoById(@PathVariable("idpromo") String IdPromo) 
+            throws NotFoundException
+    {
+        logger.info("****** We get the promotion with Id: " + IdPromo + "*******");
+
+        Promo promo = promoService.SelByIdPromo(IdPromo);
+
+        if (promo == null)
+        {
+            String ErrMsg = String.format("Promotion %s not found!", IdPromo);
+            
+            logger.warn(ErrMsg);
+            
+            throw new NotFoundException(ErrMsg);
+        }
+        
+        
+        return new ResponseEntity<Promo>(promo, HttpStatus.OK);
+    }
 
 }
