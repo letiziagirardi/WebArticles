@@ -67,7 +67,6 @@ public class PromoController
 		return new ResponseEntity<List<Promo>>(promo, HttpStatus.OK);
 	}
 
-
 	/*
 	 *  The 'listPromoById' method handles retrieving a specific promotional offer from the database based on its ID, 
 	 * dealing with cases where no offer is found.
@@ -92,6 +91,35 @@ public class PromoController
         
         
         return new ResponseEntity<Promo>(promo, HttpStatus.OK);
+    }
+
+	/*
+	 * The 'createPromo' method handles the creation of a new promotional offer by validating the incoming data, 
+	 * inserting it into the database, and providing a response with appropriate status.
+	 */
+	
+	@RequestMapping(value = "/inserisci", method = RequestMethod.POST)
+    public ResponseEntity<Promo> createPromo(@Valid @RequestBody Promo promo, BindingResult bindingResult,
+            UriComponentsBuilder ucBuilder) 
+                    throws BindingException
+    {
+        logger.info("Creating a new Promo with id " + promo.getIdPromo());
+        
+        if (bindingResult.hasErrors())
+        {
+            String MsgErr = errMessage.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
+            
+            logger.warn(MsgErr);
+
+            throw new BindingException(MsgErr);
+        }
+
+        promoService.InsPromo(promo);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(ucBuilder.path("/promo/id/{idPromo}").buildAndExpand(promo.getIdPromo()).toUri());
+
+        return new ResponseEntity<Promo>(headers, HttpStatus.CREATED);
     }
 
 }
