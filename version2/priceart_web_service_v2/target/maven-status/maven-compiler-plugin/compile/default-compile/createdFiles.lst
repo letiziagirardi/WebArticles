@@ -1,0 +1,14 @@
+com/webapp/exception/NotFoundException.class
+com/webapp/MessageConfig.class
+com/webapp/exception/ErrorResponse.class
+com/webapp/controller/InfoController.class
+com/webapp/service/PrezziServiceImpl.class
+com/webapp/appconf/AppConfig.class
+com/webapp/service/PrezziService.class
+com/webapp/exception/BindingException.class
+com/webapp/entities/DettListini.class
+com/webapp/repository/PrezziRepository.class
+com/webapp/controller/PrezziController.class
+com/webapp/Application.class
+com/webapp/exception/RestExceptionHandler.class
+com/webapp/exception/DuplicateException.class
