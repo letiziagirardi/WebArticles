@@ -152,19 +152,7 @@ public class ArticoliController
 
 				throw new BindingException(MsgErr);
 			}
-			
-			Articoli checkArt =  articoliService.SelByCodArt(articolo.getCodArt());
-
-			if (checkArt != null)
-			{
-				String MsgErr = String.format("Article %s present in the registry! "
-						+ "Cannot use POST method", articolo.getCodArt());
-				
-				logger.warn(MsgErr);
-				
-				throw new DuplicateException(MsgErr);
-			}
-			
+		
 			HttpHeaders headers = new HttpHeaders();
 			ObjectMapper mapper = new ObjectMapper();
 			
@@ -180,48 +168,52 @@ public class ArticoliController
 			return new ResponseEntity<Articoli>(headers, HttpStatus.CREATED);
 		}	
 
-
-	// ------------------- MODIFICA ARTICOLO ------------------------------------
-	@RequestMapping(value = "/modifica", method = RequestMethod.PUT)
-	public ResponseEntity<Articoli> updateArt(@Valid @RequestBody Articoli articolo, BindingResult bindingResult,
-				UriComponentsBuilder ucBuilder) throws BindingException,NotFoundException  
-	{
-		logger.info("Modifichiamo l'articolo con codice " + articolo.getCodArt());
-		
-		if (bindingResult.hasErrors())
+		// ------------------- Update an extisting Articles ------------------------------------
+		/*
+		* This method 'updateArt' handles the updating of an article using a PUT request. 
+		* It performs validation checks, looks up the existing article based on its code, updates the article using the service, 
+		* and constructs a response indicating the success of the update. 
+		*/	
+		@RequestMapping(value = "/modifica", method = RequestMethod.PUT)
+		public ResponseEntity<Articoli> updateArt(@Valid @RequestBody Articoli articolo, BindingResult bindingResult,
+					UriComponentsBuilder ucBuilder) throws BindingException,NotFoundException  
 		{
-			String MsgErr = errMessage.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
+			logger.info("Updating the article with code " + articolo.getCodArt());
 			
-			logger.warn(MsgErr);
+			if (bindingResult.hasErrors())
+			{
+				String MsgErr = errMessage.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
+				
+				logger.warn(MsgErr);
 
-			throw new BindingException(MsgErr);
+				throw new BindingException(MsgErr);
+			}
+			
+			Articoli checkArt =  articoliService.SelByCodArt(articolo.getCodArt());
+
+			if (checkArt == null)
+			{
+				String MsgErr = String.format("Article %s not present in the master data! "
+						+ "Unable to use the PUT method", articolo.getCodArt());
+				
+				logger.warn(MsgErr);
+				
+				throw new NotFoundException(MsgErr);
+			}
+			
+			HttpHeaders headers = new HttpHeaders();
+			ObjectMapper mapper = new ObjectMapper();
+			
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			ObjectNode responseNode = mapper.createObjectNode();
+
+			articoliService.InsArticolo(articolo);
+			
+			responseNode.put("code", HttpStatus.OK.toString());
+			responseNode.put("message", "Update Article " + articolo.getCodArt() + " Executed Successfully");
+
+			return new ResponseEntity<Articoli>(headers, HttpStatus.CREATED);
 		}
-		
-		Articoli checkArt =  articoliService.SelByCodArt(articolo.getCodArt());
-
-		if (checkArt == null)
-		{
-			String MsgErr = String.format("Articolo %s non presente in anagrafica! "
-					+ "Impossibile utilizzare il metodo PUT", articolo.getCodArt());
-			
-			logger.warn(MsgErr);
-			
-			throw new NotFoundException(MsgErr);
-		}
-		
-		HttpHeaders headers = new HttpHeaders();
-		ObjectMapper mapper = new ObjectMapper();
-		
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		ObjectNode responseNode = mapper.createObjectNode();
-
-		articoliService.InsArticolo(articolo);
-		
-		responseNode.put("code", HttpStatus.OK.toString());
-		responseNode.put("message", "Modifica Articolo " + articolo.getCodArt() + " Eseguita Con Successo");
-
-		return new ResponseEntity<Articoli>(headers, HttpStatus.CREATED);
-	}
 
 }
