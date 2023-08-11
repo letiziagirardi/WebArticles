@@ -1,3 +1,3 @@
 # WebArticles
 
-Project for SDE course at UniTn
+Project for SDE course at UniTn.
