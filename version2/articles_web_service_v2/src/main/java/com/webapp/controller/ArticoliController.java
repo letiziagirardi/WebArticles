@@ -216,4 +216,43 @@ public class ArticoliController
 			return new ResponseEntity<Articoli>(headers, HttpStatus.CREATED);
 		}
 
+		// ------------------- Delete an extisting Articles ------------------------------------
+		/*
+		 * The method 'deleteArt' handles the deletion of an article using a DELETE request with a specific article code. 
+		 * It looks up the article by its code, deletes it using the service, constructs a response indicating the success of the deletion, 
+		 * and returns the response. 
+		 */
+
+		@RequestMapping(value = "/elimina/{codart}", method = RequestMethod.DELETE)
+		public ResponseEntity<?> deleteArt(@PathVariable("codart") String CodArt)
+				throws  NotFoundException 
+		{
+			logger.info("Eliminiamo l'articolo con codice " + CodArt);
+
+			HttpHeaders headers = new HttpHeaders();
+			ObjectMapper mapper = new ObjectMapper();
+
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			ObjectNode responseNode = mapper.createObjectNode();
+
+			Articoli articolo = articoliService.SelByCodArt(CodArt);
+
+			if (articolo == null)
+			{
+				String MsgErr = String.format("Article %s not present in the master data! ",CodArt);
+				
+				logger.warn(MsgErr);
+				
+				throw new NotFoundException(MsgErr);
+			}
+
+			articoliService.DelArticolo(articolo);
+
+			responseNode.put("code", HttpStatus.OK.toString());
+			responseNode.put("message", "Article deletion" + CodArt + " Done Successfully");
+
+			return new ResponseEntity<>(responseNode, headers, HttpStatus.OK);
+		}
+
 }
