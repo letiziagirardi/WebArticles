@@ -28,9 +28,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.webapp.model.Utenti;
- 
+
 import com.webapp.service.UtentiService;
- 
+  
 @RestController
 @RequestMapping(value = "/utenti")
 public class UtentiController
@@ -39,10 +39,10 @@ public class UtentiController
 
 	@Autowired
 	UtentiService utentiService;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
-	
+
 	@RequestMapping(value = "/cerca/tutti", method = RequestMethod.GET)
 	public List<Utenti> getAllUser()
 	{
@@ -50,19 +50,19 @@ public class UtentiController
 
 		return utentiService.SelTutti();
 	}
-	
+
 	@GetMapping(value = "/cerca/userid/{userId}")
-	public Utenti getUtente(@PathVariable("userId") String UserId) 
+	public Utenti getUtente(@PathVariable("userId") String UserId)
 	{
 		LOG.info("Otteniamo l'utente " + UserId);
-		
+
 		Utenti retVal = utentiService.SelUser(UserId);
-		
+
 		return retVal;
 	}
-	
+
 	@PostMapping(value = "/inserisci")
-	public ResponseEntity<Utenti> addNewUser(@Valid @RequestBody Utenti utente, 
+	public ResponseEntity<Utenti> addNewUser(@Valid @RequestBody Utenti utente,
 		BindingResult bindingResult)
 	{
 		LOG.info("Inserimento Nuovo Utente");
@@ -70,19 +70,19 @@ public class UtentiController
 		if (bindingResult.hasErrors())
 		{
 			String MsgErr = "Errore Validazione Password";
-			
+
 			LOG.warn(MsgErr);
 
 			//throw new BindingException(MsgErr);
 		}
-		
+
 		String encodedPassword = passwordEncoder.encode(utente.getPassword());
 		utente.setPassword(encodedPassword);
 		utentiService.Save(utente);
 
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
 				.path("/{id}").buildAndExpand(utente.getId()).toUri();
-		
+
 		return ResponseEntity.created(location).build();
 	}
 
@@ -104,9 +104,9 @@ public class UtentiController
 		if (utente == null)
 		{
 			String MsgErr = String.format("Utente %s non presente in anagrafica! ",UserId);
-			
+
 			LOG.warn(MsgErr);
-			
+
 			//throw new NotFoundException(MsgErr);
 		}
 

@@ -1,8 +1,0 @@
-com/webapp/model/Utenti.class
-com/webapp/service/UtentiService.class
-com/webapp/repository/UtentiRepository.class
-com/webapp/controller/UtentiController.class
-com/webapp/Application.class
-com/webapp/service/UtentiServiceImpl.class
-com/webapp/security/AuthEntryPoint.class
-com/webapp/security/SecurityConfiguration.class
