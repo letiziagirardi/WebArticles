@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.webapp.entities.DettPromo;
-  
+
 import com.webapp.service.DettPromoService;
 
 @RestController
