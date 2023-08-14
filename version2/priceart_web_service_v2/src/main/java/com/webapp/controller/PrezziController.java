@@ -48,6 +48,12 @@ public class PrezziController
 	@Autowired
 	private ResourceBundleMessageSource errMessage;
 
+	/*
+	 * The `getPriceCodArt` method is used to find and return the price of a specific article based on its unique code. 
+	 * It retrieves the pricing list identifier from a configuration source, fetches pricing details for the given article code and pricing list, 
+	 * and then returns the price if it's found.
+	 * If the pricing details are not available, it logs a warning message and returns a default value of 0.
+	 */
 	@ApiOperation(
 		    value = "Search for the price of an item based on the price list entered in the properties",
 			notes = "Method called by external service. Returns 0 if price not found",
@@ -56,15 +62,7 @@ public class PrezziController
 	@ApiResponses(value =
 	{ @ApiResponse(code = 200, message = "Calling Ok")})
 
-	
 	@RequestMapping(value = "/{codart}", method = RequestMethod.GET)
-
-	/*
-	 * The `getPriceCodArt` method is used to find and return the price of a specific article based on its unique code. 
-	 * It retrieves the pricing list identifier from a configuration source, fetches pricing details for the given article code and pricing list, 
-	 * and then returns the price if it's found.
-	 * If the pricing details are not available, it logs a warning message and returns a default value of 0.
-	 */
 
 	public double getPriceCodArt(@ApiParam("Code Article") @PathVariable("codart") String CodArt)  
 	{

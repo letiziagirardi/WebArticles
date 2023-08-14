@@ -17,12 +17,15 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+ 
 
 import lombok.Data;
 
@@ -64,6 +67,9 @@ public class Articoli  implements Serializable
 	@Temporal(TemporalType.DATE)
 	@Column(name = "DATACREAZIONE")
 	private Date dataCreaz;
+
+	@Transient
+	private Double prezzo;
 	
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "articolo", orphanRemoval = true)
 	@JsonManagedReference
@@ -80,7 +86,5 @@ public class Articoli  implements Serializable
 	@ManyToOne
 	@JoinColumn(name = "IDIVA", referencedColumnName = "idIva")
 	private Iva iva;
-	
-	
-	
+
 }

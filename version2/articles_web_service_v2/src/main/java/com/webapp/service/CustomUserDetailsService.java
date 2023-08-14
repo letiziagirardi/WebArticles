@@ -17,7 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
- 
+
 import org.springframework.web.client.RestTemplate;
 
 @Service("customUserDetailsService")
@@ -90,7 +90,7 @@ public class CustomUserDetailsService implements UserDetailsService
 			e.printStackTrace();
 		}
 
-		RestTemplate restTemplate = new RestTemplate(); //used for archestration 
+		RestTemplate restTemplate = new RestTemplate(); //used for archestration
 		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(Config.getUserId(), Config.getPassword()));
 
 		Utenti utente = null;

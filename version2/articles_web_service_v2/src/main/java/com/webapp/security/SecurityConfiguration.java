@@ -20,13 +20,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 {
 	private static String REALM = "REAME";
-	
+
 	private static final String[] USER_MATCHER = { "/articoli/cerca/**"};
 	private static final String[] ADMIN_MATCHER = { "/articoli/inserisci/**", "/articoli/modifica/**", "/articoli/elimina/**" };
-	
+
 	@Autowired
 	@Qualifier("customUserDetailsService")
-	private UserDetailsService userDetailsService;
+	private UserDetailsService userDetailsService; //INFO UTENTE -- authentication per authroization
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception
@@ -40,15 +40,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 				.httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint()).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
-	
+
 	@Autowired
-	  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception 
+	  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception
 	  {
 	    	auth
 	    		.userDetailsService(userDetailsService)
 	    		.passwordEncoder(new BCryptPasswordEncoder());
 	  }
-	
+
 	@Bean
 	public AuthEntryPoint getBasicAuthEntryPoint()
 	{
