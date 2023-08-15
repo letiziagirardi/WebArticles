@@ -102,7 +102,7 @@ public class ArticoliController
 		return values;
 	}
 
-		// ------------------- Search By Code ------------------------------------
+		// ------------------- Search By BarCode Ean ------------------------------------
 		/*
 		 * This method defines a REST API endpoint that receives a barcode, retrieves information about an article
 		 * using that barcode, calculates its price based on the provided credentials, and returns the article information
@@ -147,6 +147,44 @@ public class ArticoliController
 			return new ResponseEntity<Articoli>(articolo, HttpStatus.OK);
 		}
 
+
+		// ------------------- Search By CodArt ------------------------------------
+		@ApiOperation(
+			      value = "Ricerca l'articolo per codice CodArt",
+			      notes = "Restituisce i dati dell'articolo in formato JSON",
+			      response = Articoli.class,
+			      produces = "application/json")
+		@ApiResponses(value =
+		{ @ApiResponse(code = 200, message = "Articolo Trovato"),
+		  @ApiResponse(code = 404, message = "Articolo Non Trovato")})
+		@RequestMapping(value = "/cerca/codice/{codart}", method = RequestMethod.GET, produces = "application/json")
+		public ResponseEntity<Articoli> listArtByCodArt(@PathVariable("codart") String CodArt,
+			HttpServletRequest httpRequest)
+				throws NotFoundException
+		{
+			logger.info("****** Otteniamo l'articolo con codice " + CodArt + " *******");
+			
+			String[] credentials = getHttpCredentials(httpRequest.getHeader("Authorization"));
+
+			Articoli articolo = articoliService.SelByCodArt(CodArt);
+
+			if (articolo == null)
+			{
+				String ErrMsg = String.format("L'articolo con codice %s non è stato trovato!", CodArt);
+				
+				logger.warn(ErrMsg);
+				
+				throw new NotFoundException(ErrMsg);
+			}
+			else
+			{
+
+				articolo.setPrezzo(this.getPriceArt(articolo.getCodArt(), credentials));
+			}
+
+			return new ResponseEntity<Articoli>(articolo, HttpStatus.OK);
+		}
+
 		// ------------------- Search By Description ------------------------------------
 		/*
 			* this code is an API endpoint that handles HTTP GET requests to retrieve a list of items from a database
@@ -154,8 +192,17 @@ public class ArticoliController
 			* If no items are found for the provided description filter, it throws a NotFoundException.
 			* Otherwise, it returns the list of items in JSON format as the response.
 			*/
+		@ApiOperation(
+			      value = "Ricerca l'articolo per descrizione",
+			      notes = "Restituisce i dati dell'articolo in formato JSON",
+			      response = Articoli.class,
+			      produces = "application/json")
+		@ApiResponses(value =
+		{ @ApiResponse(code = 200, message = "Articolo Trovato"),
+		  @ApiResponse(code = 404, message = "Articolo Non Trovato")})
 		@RequestMapping(value = "/cerca/descrizione/{filter}", method = RequestMethod.GET, produces = "application/json")
-		public ResponseEntity<List<Articoli>> listArtByDesc(@PathVariable("filter") String Filter)
+		public ResponseEntity<List<Articoli>> listArtByDesc(@PathVariable("filter") String Filter,
+			HttpServletRequest httpRequest)
 				throws NotFoundException
 		{
 			logger.info("****** We get the items with Description: " + Filter + " *******");
@@ -181,10 +228,18 @@ public class ArticoliController
 		 * an HTTP POST request, ensuring validation, duplicate checks, database interaction,
 		 * and generating appropriate JSON responses.
 		 */
+		@ApiOperation(
+			      value = "Ricerca l'articolo per descrizione",
+			      notes = "Restituisce i dati dell'articolo in formato JSON",
+			      response = Articoli.class,
+			      produces = "application/json")
+		@ApiResponses(value =
+		{ @ApiResponse(code = 200, message = "Articolo Trovato"),
+		  @ApiResponse(code = 404, message = "Articolo Non Trovato")})
 		@RequestMapping(value = "/inserisci", method = RequestMethod.POST)
 		public ResponseEntity<Articoli> createArt(@Valid @RequestBody Articoli articolo, BindingResult bindingResult,
-				UriComponentsBuilder ucBuilder)
-				throws BindingException, DuplicateException
+			UriComponentsBuilder ucBuilder, HttpServletRequest httpRequest)
+			throws BindingException, DuplicateException
 		{
 			logger.info("Saving Article with code " + articolo.getCodArt());
 
@@ -197,68 +252,33 @@ public class ArticoliController
 				throw new BindingException(MsgErr);
 			}
 
-			HttpHeaders headers = new HttpHeaders();
-			ObjectMapper mapper = new ObjectMapper();
-
-			headers.setContentType(MediaType.APPLICATION_JSON);
-
-			ObjectNode responseNode = mapper.createObjectNode();
-
-			articoliService.InsArticolo(articolo);
-
-			responseNode.put("code", HttpStatus.OK.toString());
-			responseNode.put("message", "Posting Article " + articolo.getCodArt() + " Executed Successfully");
-
-			return new ResponseEntity<Articoli>(headers, HttpStatus.CREATED);
-		}
-
-		// ------------------- Update an extisting Articles ------------------------------------
-		/*
-		* This method 'updateArt' handles the updating of an article using a PUT request.
-		* It performs validation checks, looks up the existing article based on its code, updates the article using the service,
-		* and constructs a response indicating the success of the update.
-		*/
-		@RequestMapping(value = "/modifica", method = RequestMethod.PUT)
-		public ResponseEntity<Articoli> updateArt(@Valid @RequestBody Articoli articolo, BindingResult bindingResult,
-					UriComponentsBuilder ucBuilder) throws BindingException,NotFoundException
-		{
-			logger.info("Updating the article with code " + articolo.getCodArt());
-
-			if (bindingResult.hasErrors())
-			{
-				String MsgErr = errMessage.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
-
-				logger.warn(MsgErr);
-
-				throw new BindingException(MsgErr);
-			}
-
 			Articoli checkArt =  articoliService.SelByCodArt(articolo.getCodArt());
 
-			if (checkArt == null)
+			if (checkArt != null)
 			{
-				String MsgErr = String.format("Article %s not present in the master data! "
-						+ "Unable to use the PUT method", articolo.getCodArt());
-
+				String MsgErr = String.format("Articolo %s presente in anagrafica! "
+						+ "Impossibile utilizzare il metodo POST", articolo.getCodArt());
+				
 				logger.warn(MsgErr);
-
-				throw new NotFoundException(MsgErr);
+				
+				throw new DuplicateException(MsgErr);
 			}
-
+			
 			HttpHeaders headers = new HttpHeaders();
 			ObjectMapper mapper = new ObjectMapper();
-
+			
 			headers.setContentType(MediaType.APPLICATION_JSON);
 
 			ObjectNode responseNode = mapper.createObjectNode();
 
 			articoliService.InsArticolo(articolo);
-
+			
 			responseNode.put("code", HttpStatus.OK.toString());
-			responseNode.put("message", "Update Article " + articolo.getCodArt() + " Executed Successfully");
+			responseNode.put("message", "Inserimento Articolo " + articolo.getCodArt() + " Eseguita Con Successo");
 
 			return new ResponseEntity<Articoli>(headers, HttpStatus.CREATED);
-		}
+			}
 
 
+			
 }
