@@ -17,18 +17,6 @@ public class DettPromoServiceImpl implements DettPromoService
 
 	@Autowired
 	private DettPromoRepository dettPromoRepository;
-		
-	@Override
-	public List<DettPromo> SelDettPromoByCodFid(String CodFid)
-	{
-		List<DettPromo> retVal = dettPromoRepository.findDettPromoActive()
-		.stream()
-		.filter(v -> v.getCodfid() != null)
-		.filter(v -> v.getCodfid().equals(CodFid)) 
-		.collect(Collectors.toList());
-
-		return retVal;
-	}
 	
 	@Override
 	public List<DettPromo> SelDettPromoByCode(String Codice)

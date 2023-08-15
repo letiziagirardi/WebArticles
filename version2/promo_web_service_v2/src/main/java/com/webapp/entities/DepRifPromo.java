@@ -12,9 +12,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+//import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
+//import lombok.Data;
 
 @Entity
 @Table(name = "DEPRIFPROMO")
+//@Data
 public class DepRifPromo implements Serializable
 {
 private static final long serialVersionUID = 1436206967746080890L;
