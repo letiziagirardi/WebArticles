@@ -17,16 +17,30 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
+//@Profile(value = {"development", "production"})
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 {
 	private static String REALM = "REAME";
-
-	private static final String[] USER_MATCHER = { "/articoli/cerca/**"};
-	private static final String[] ADMIN_MATCHER = { "/articoli/inserisci/**", "/articoli/modifica/**", "/articoli/elimina/**" };
-
+	
+	private static final String[] USER_MATCHER = { "/prezzi/cerca/**", "/prezzi/**", "/info", "actuator/**"};
+	private static final String[] ADMIN_MATCHER = { "/prezzi/inserisci/**", "/prezzi/elimina/**"};
+	private static final String[] AUTH_WHITELIST = {
+		// -- swagger ui
+		"/api/",
+		"/api/**",
+		"/v2/api-docs",
+		"/swagger-resources",
+		"/swagger-resources/**",
+		"/configuration/ui",
+		"/configuration/security",
+		"/swagger-ui/**",
+		"/swagger-ui.html",
+		"/webjars/**"
+	};
+	
 	@Autowired
 	@Qualifier("customUserDetailsService")
-	private UserDetailsService userDetailsService; //INFO UTENTE -- authentication per authroization
+	private UserDetailsService userDetailsService;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception
@@ -35,20 +49,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 				.authorizeRequests()
 				.antMatchers(USER_MATCHER).hasAnyRole("USER")
 				.antMatchers(ADMIN_MATCHER).hasAnyRole("ADMIN")
+				.antMatchers(AUTH_WHITELIST).permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint()).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
-
+	
 	@Autowired
-	  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception
+	  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception 
 	  {
 	    	auth
 	    		.userDetailsService(userDetailsService)
 	    		.passwordEncoder(new BCryptPasswordEncoder());
 	  }
-
+	
 	@Bean
 	public AuthEntryPoint getBasicAuthEntryPoint()
 	{
