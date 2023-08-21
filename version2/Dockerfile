@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y mongodb && apt-get install -y nano
 RUN mkdir -p /data/db
 
 # Expose port 37017 from the container to the host
-EXPOSE 37017
+EXPOSE 27017
 
 # Start MongoDB
 CMD ["mongod", "-f", "/etc/mongodb.conf"]

@@ -83,25 +83,33 @@ public class ArticoliController
         HttpServletRequest httpRequest)
             throws NotFoundException
     {
-        logger.info("****** Otteniamo la miglior promo attiva sull'articolo con codice " + CodArt + " *******");
-		
-		String[] credentials = getHttpCredentials(httpRequest.getHeader("Authorization"));
+		Articoli articolo = null;
 
-		Articoli articolo = articoliService.SelByCodArt(CodArt);
+		try{
 
-		if (articolo == null)
-		{
-			String ErrMsg = String.format("L'articolo con codice %s non è stato trovato!", CodArt);
+			logger.info("****** Otteniamo la miglior promo attiva sull'articolo con codice " + CodArt + " *******");
 			
-			logger.warn(ErrMsg);
-			
-			throw new NotFoundException(ErrMsg);
-		}
-		else
-		{
+			String[] credentials = getHttpCredentials(httpRequest.getHeader("Authorization"));
 
-			articolo.setPrezzo(this.getPriceArt(articolo.getCodArt(), credentials));
-		}
+			articolo = articoliService.SelByCodArt(CodArt);
+
+			if (articolo == null)
+			{
+				String ErrMsg = String.format("L'articolo con codice %s non è stato trovato!", CodArt);
+				
+				logger.warn(ErrMsg);
+				
+				throw new NotFoundException(ErrMsg);
+			}
+			else
+			{
+
+				articolo.setPrezzo(this.getPriceArt(articolo.getCodArt(), credentials));
+			}
+		} catch(Throwable eThrowable){
+				logger.error("Error in priceart: ", eThrowable);
+				throw eThrowable;
+			}
 
 		return new ResponseEntity<Double>(articolo.getPrezzo(), HttpStatus.OK);
     
@@ -115,6 +123,8 @@ public class ArticoliController
 	private Double getPriceArt(String CodArt, String[] Credentials)
 	{
 
+		Double Prezzo ;
+		try{
 		String ServiceUri = priceServiceUrl + CodArt;
 
 		logger.info("****** Richiesto prezzo al servizio " + ServiceUri + " *******");
@@ -124,9 +134,13 @@ public class ArticoliController
 
 		ResponseEntity<Double> responseEntity = restTemplate.getForEntity(ServiceUri, Double.class);
 
-		Double Prezzo = responseEntity.getBody();
+		Prezzo = responseEntity.getBody();
 
 		logger.info("Prezzo Articolo " + CodArt + ": " + Prezzo);
+		} catch(Throwable eThrowable){
+				logger.error("Error in priceart: ", eThrowable);
+				throw eThrowable;
+			}
 
 		return Prezzo;
 	}
@@ -210,5 +224,88 @@ public class ArticoliController
 
 		return Prezzo;
 	}
-	
+
+	// ------------------- Search By BarCode Ean ------------------------------------ OK
+    /*
+        * This method defines a REST API endpoint that receives a barcode, retrieves information about an article
+        * using that barcode, calculates its price based on the provided credentials, and returns the article information
+        * along with its calculated price as an HTTP response.
+    */
+    @ApiOperation(
+                value = "Ricerca l'articolo per codice a barre",
+                notes = "Restituisce i dati dell'articolo in formato JSON",
+                response = Articoli.class,
+                produces = "application/json")
+    @ApiResponses(value =
+    { @ApiResponse(code = 200, message = "Articolo Trovato"),
+        @ApiResponse(code = 404, message = "Articolo Non Trovato")})
+    @RequestMapping(value = "/cerca/ean/{barcode}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<Articoli> listArtByEan(@ApiParam("Barcode univoco dell'articolo") @PathVariable("barcode") String Barcode,
+        HttpServletRequest httpRequest)
+            throws NotFoundException
+    {
+        logger.info("****** Otteniamo l'articolo con barcode " + Barcode + " *******");
+
+        String[] credentials = getHttpCredentials(httpRequest.getHeader("Authorization"));
+
+        Articoli articolo;
+        Barcode Ean = barcodeService.SelByBarcode(Barcode);
+
+        if (Ean == null)
+        {
+            String ErrMsg = String.format("Il barcode %s non è stato trovato!", Barcode);
+
+            logger.warn(ErrMsg);
+
+            throw new NotFoundException(ErrMsg);
+        }
+        else
+        {
+            articolo = Ean.getArticolo();
+
+            articolo.setPrezzo(this.getPriceArt(articolo.getCodArt(), credentials));
+        }
+
+        return new ResponseEntity<Articoli>(articolo, HttpStatus.OK);
+    }
+
+	// ------------------- Search By Description ------------------------------------
+	/*
+		* this code is an API endpoint that handles HTTP GET requests to retrieve a list of items from a database
+		* based on their description. It retrieves all matching items in one request.
+		* If no items are found for the provided description filter, it throws a NotFoundException.
+		* Otherwise, it returns the list of items in JSON format as the response.
+	*/
+	@ApiOperation(
+				value = "Ricerca l'articolo per descrizione",
+				notes = "Restituisce i dati dell'articolo in formato JSON",
+				response = Articoli.class,
+				produces = "application/json")
+	@ApiResponses(value =
+	{ @ApiResponse(code = 200, message = "Articolo Trovato"),
+	@ApiResponse(code = 404, message = "Articolo Non Trovato")})
+	@RequestMapping(value = "/cerca/descrizione/{filter}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<List<Articoli>> listArtByDesc(@PathVariable("filter") String Filter,
+		HttpServletRequest httpRequest)
+			throws NotFoundException
+	{
+		logger.info("****** We get the items with Description: " + Filter + " *******");
+
+		List<Articoli> articoli = articoliService.SelByDescrizione(Filter + "%");
+
+		if (articoli == null)
+		{
+			String ErrMsg = String.format("No item with description %s was found", Filter);
+
+			logger.warn(ErrMsg);
+
+			throw new NotFoundException(ErrMsg);
+
+		}
+
+		return new ResponseEntity<List<Articoli>>(articoli, HttpStatus.OK);
+	}
+
+
+
 }

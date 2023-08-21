@@ -1,0 +1,3 @@
+org/springframework/cloud/springcloudstartergateway/configuration/CustomGatewayAutoConfiguration.class
+org/springframework/cloud/springcloudstartergateway/SpringCloudStarterGatewayApplication.class
+org/springframework/cloud/springcloudstartergateway/configuration/CustomReactorNettyWebSocketClient.class

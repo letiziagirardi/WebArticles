@@ -42,7 +42,7 @@ public class PrezziPromoController
 
 	private static final Logger logger = LoggerFactory.getLogger(PrezziPromoController.class);
 
-// ------------------- Search By CodArt ------------------------------------
+// ------------------- Search By CodArt ------------------------------------ 
 	@ApiOperation(
 		value = "Ricerca l'articolo per codice CodArt",
 		notes = "Restituisce i dati dell'articolo in formato JSON",

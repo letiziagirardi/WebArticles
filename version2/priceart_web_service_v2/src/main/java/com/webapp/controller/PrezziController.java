@@ -61,9 +61,7 @@ public class PrezziController
 			produces="application/json")
 	@ApiResponses(value =
 	{ @ApiResponse(code = 200, message = "Calling Ok")})
-
 	@RequestMapping(value = "/{codart}", method = RequestMethod.GET)
-
 	public double getPriceCodArt(@ApiParam("Code Article") @PathVariable("codart") String CodArt)  
 	{
 		double retVal = 0;
@@ -119,78 +117,6 @@ public class PrezziController
         
         return new ResponseEntity<DettListini>(dettListini, HttpStatus.OK);
             
-    }
-
-	/*
-	 * The `createPrice` method is used to create new pricing entries in the database. 
-	 * It validates the input, logs relevant information, inserts data, returns a response indicating the success of the operation,
-	 *  and logs the success message again. 
-	*/
-
-    @RequestMapping(value = "/inserisci", method = RequestMethod.POST)
-    public ResponseEntity<DettListini> createPrice(@Valid @RequestBody DettListini dettListini, BindingResult bindingResult,
-            UriComponentsBuilder ucBuilder) 
-            throws BindingException 
-    {
-		logger.info("--- DettListini Details:");
-		logger.info("CodArt: {}", dettListini.getCodArt());
-		logger.info("Prezzo: {}", dettListini.getPrezzo());
-		logger.info("IdList: {}", dettListini.getIdList());
-
-
-        logger.info(String.format("We save the %s price of the %s item", dettListini.getPrezzo(),  dettListini.getCodArt()));
-        
-        if (bindingResult.hasErrors())
-        {
-            String MsgErr = errMessage.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
-            
-            logger.warn(MsgErr);
-
-            throw new BindingException(MsgErr);
-        }
-         
-        HttpHeaders headers = new HttpHeaders();
-        ObjectMapper mapper = new ObjectMapper();
-        
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        ObjectNode responseNode = mapper.createObjectNode();
-
-        prezziService.InsPrezzo(dettListini);
-
-		
-		logger.info( "Price entry " + dettListini.getPrezzo() + " Executed Successfully");
-        responseNode.put("code", HttpStatus.OK.toString());
-        responseNode.put("message", "Price entry " + dettListini.getPrezzo() + " Executed Successfully");
-		        
-		return new ResponseEntity<DettListini>(headers, HttpStatus.CREATED);
-    }
-
-
-	/*
-	 * This `deletePrice` method is used to delete of a pricing entry from the database based on the provided CodArt and IdList. 
-	 * It logs the operation, performs the deletion, generates a success response message, and returns a response entity with the success message. 
-	 * This code is part of a RESTful API and follows the HTTP DELETE method convention for resource deletion.
-	 */
-    @RequestMapping(value = "/elimina/{codart}/{idlist}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deletePrice(@PathVariable("codart") String CodArt, @PathVariable("idlist") String IdList)
-    {
-        logger.info(String.format("Elimination of list price %s of item %s",IdList,CodArt));
-
-        HttpHeaders headers = new HttpHeaders();
-        ObjectMapper mapper = new ObjectMapper();
-
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        ObjectNode responseNode = mapper.createObjectNode();
-
-        prezziService.DelPrezzo(CodArt, IdList);
-
-        logger.info("Removal Successfully Successful");
-		responseNode.put("code", HttpStatus.OK.toString());
-        responseNode.put("message", "Removal Successfully Successful");
-
-        return new ResponseEntity<>(responseNode, headers, HttpStatus.OK);
     }
 
 }

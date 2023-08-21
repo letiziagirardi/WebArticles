@@ -1,0 +1,49 @@
+spring:
+  main.allow-bean-definition-overriding: true
+  application:
+    name: gateway-service  
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 1000s
+      routes:
+      - id: articles
+        uri: http://articles:5051/
+        predicates: 
+          - Path=/articles/** 
+        filters: 
+          - RewritePath=/articles/(?<segment>.*),/$\{segment}
+      - id: promo
+        uri: http://promo:5061/
+        predicates: 
+          - Path=/promo/** 
+        filters: 
+          - RewritePath=/promo/(?<segment>.*),/$\{segment}
+      - id: price
+        uri: http://price:5071/
+        predicates: 
+          - Path=/price/** 
+        filters: 
+          - RewritePath=/price/(?<segment>.*),/$\{segment}
+      - id: gestuser
+        uri: http://gestuser:8019/
+        predicates: 
+          - Path=/gestuser/** 
+        filters: 
+          - RewritePath=/gestuser/(?<segment>.*),/$\{segment}
+            
+            
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.http.server.reactive: DEBUG
+    org.springframework.web.reactive: DEBUG
+    reactor.ipc.netty: DEBUG
+    reactor.netty: DEBUG
+    
+#Important we must ovverride Netty classes to increase Max Frame Payload Lenght   
+spring.main.allow-bean-definition-overriding: true
+#Used by Netty - with the default the proxy return errors when a large data vaadin grid are used
+maxframepayloadlenght: 10485760
+spring.cloud.gateway.httpserver.websocket.maxFramePayloadLength: ${maxframepayloadlenght}

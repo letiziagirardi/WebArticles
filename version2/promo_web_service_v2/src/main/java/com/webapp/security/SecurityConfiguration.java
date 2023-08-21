@@ -26,11 +26,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 	private static final String[] ADMIN_MATCHER = { "/promo/inserisci/**", "/promo/elimina/**"};
 	private static final String[] AUTH_WHITELIST = {
 		// -- swagger ui
+		"/api/",
+		"/api/**",
 		"/v2/api-docs",
 		"/swagger-resources",
 		"/swagger-resources/**",
 		"/configuration/ui",
 		"/configuration/security",
+		"/swagger-ui/**",
 		"/swagger-ui.html",
 		"/webjars/**"
 	};
@@ -44,10 +47,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 	{
 			http.csrf().disable()
 				.authorizeRequests()
-				.antMatchers(AUTH_WHITELIST).permitAll()
 				.antMatchers(USER_MATCHER).hasAnyRole("USER")
 				.antMatchers(ADMIN_MATCHER).hasAnyRole("ADMIN")
-				.anyRequest().authenticated()
+				.antMatchers(AUTH_WHITELIST).permitAll()
+				// .anyRequest().authenticated()
+				.antMatchers("/**").authenticated()
 				.and()
 				.httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint()).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
