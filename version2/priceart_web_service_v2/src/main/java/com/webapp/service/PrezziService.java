@@ -8,6 +8,4 @@ public interface PrezziService
 
 	public void InsPrezzo(DettListini dettListini);
 
-	public void DelPrezzo(String CodArt, String IdList);
-
 }

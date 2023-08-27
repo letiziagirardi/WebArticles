@@ -35,7 +35,7 @@ build_service() {
 build_main() {
   docker compose down
 #  docker builder prune -a -f  forcefully clean up unused build cache
-  docker image prune -a
+  docker image prune -a -f
   echo "docker compose down: clean up"
 
   cd articles_web_service_v2

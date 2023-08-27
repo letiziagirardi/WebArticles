@@ -135,14 +135,14 @@ public class PrezziController
 	 */
 
 	@ApiOperation(
-				value = "Insert new price for existing article",
+				value = "Insert or modify new price for existing article",
 			 	response = DettListini.class,
 			 	produces="application/json")
 	@ApiResponses(value =
 	{@ApiResponse(code = 200, message = "Article added")})
 	// ------------------- INSERT PREZZO LISTINO ------------------------------------
 	@RequestMapping(value = "/inserisci", method = RequestMethod.POST)
-	public ResponseEntity<DettListini> createPrice(@Valid @RequestBody DettListini dettListini, BindingResult bindingResult,
+	public ResponseEntity<DettListini> createModifyPrice(@Valid @RequestBody DettListini dettListini, BindingResult bindingResult,
 			UriComponentsBuilder ucBuilder) 
 			throws BindingException 
 	{
@@ -170,39 +170,6 @@ public class PrezziController
 		responseNode.put("message", "Adding Price " + dettListini.getPrezzo() + " Done Successfullyo");
 
 		return new ResponseEntity<DettListini>(headers, HttpStatus.CREATED);
-	}
-
-	/*
-	 * The `deletePrice` method handles the deletion of a price entry for a specific article. 
-	 * It logs relevant information, performs the deletion, and returns a response entity with 
-	 * information about the success of the operation.
-	 */
-	
-	@ApiOperation(
-				value = "Delete price of existing article",
-			 	response = DettListini.class,
-			 	produces="application/json")
-	@ApiResponses(value =
-	{@ApiResponse(code = 200, message = "Price Deleted")})
-	// ------------------- DELETE PREZZO LISTINO ------------------------------------
-	@RequestMapping(value = "/elimina/{codart}/{idlist}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deletePrice(@PathVariable("codart") String CodArt, @PathVariable("idlist") String IdList)
-	{
-		logger.info(String.format("Elimination of list price %s of item %s",IdList,CodArt));
-
-		HttpHeaders headers = new HttpHeaders();
-		ObjectMapper mapper = new ObjectMapper();
-
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		ObjectNode responseNode = mapper.createObjectNode();
-
-		prezziService.DelPrezzo(CodArt, IdList);
-
-		responseNode.put("code", HttpStatus.OK.toString());
-		responseNode.put("message", "Price Elimination Completed Successfully");
-
-		return new ResponseEntity<>(responseNode, headers, HttpStatus.OK);
 	}
 
 }

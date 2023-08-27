@@ -65,7 +65,7 @@ public class ArticoliController
 	private String promoServiceUrl;
 
 	/*
-	 * The getPriceArt method is responsible for retrieving the price of an article 
+	 * The getPriceArt method is responsible for retrieving the price of an article
 	 * from an external service using a RESTful HTTP GET request.
 	 * It returns a Double value representing the price of the article.
 	 *  */
@@ -95,7 +95,7 @@ public class ArticoliController
 	}
 
 	/*
-	 * The method getHttpCredentials extracts and decodes the basic authentication credentials 
+	 * The method getHttpCredentials extracts and decodes the basic authentication credentials
 	 * from an Authorization header.
 	 */
 	// ------------------- Authorization ------------------------------------
@@ -137,7 +137,7 @@ public class ArticoliController
 		try{
 
 			logger.info("****** Getting the best promo active on the article with codArt " + CodArt + " *******");
-			
+
 			String[] credentials = getHttpCredentials(httpRequest.getHeader("Authorization"));
 			logger.info("credentials:" + credentials);
 
@@ -146,9 +146,9 @@ public class ArticoliController
 			if (articolo == null)
 			{
 				String ErrMsg = String.format("Article %s not found!", CodArt);
-				
+
 				logger.warn(ErrMsg);
-				
+
 				throw new NotFoundException(ErrMsg);
 			}
 			else
@@ -162,7 +162,7 @@ public class ArticoliController
 			}
 
 		return new ResponseEntity<Articoli>(articolo, HttpStatus.OK);
-    
+
     }
 
 	// ------------------- Search By BarCode Ean ------------------------------------ OK
@@ -177,39 +177,39 @@ public class ArticoliController
     @ApiResponses(value =
     { @ApiResponse(code = 200, message = "Article found"),
     @ApiResponse(code = 404, message = "Article not found")})
-	
+
 	@RequestMapping(value = "/cerca/ean/{barcode}", method = RequestMethod.GET, produces = "application/json")
 		public ResponseEntity<Articoli> listArtByEan(@ApiParam("Barcode") @PathVariable("barcode") String Barcode,
 			HttpServletRequest httpRequest)
 				throws NotFoundException
 		{
 			logger.info("****** Getting Article with Barcode " + Barcode + " *******");
-	
+
 			String[] credentials = getHttpCredentials(httpRequest.getHeader("Authorization"));
 
 			Articoli articolo;
 			Barcode Ean = barcodeService.SelByBarcode(Barcode);
-	
+
 			if (Ean == null)
 			{
 				String ErrMsg = String.format("Barcode %s not found!", Barcode);
-	
+
 				logger.warn(ErrMsg);
-	
+
 				throw new NotFoundException(ErrMsg);
 				//return new ResponseEntity<Articoli>(HttpStatus.NOT_FOUND);
 			}
 			else
 			{
 				articolo = Ean.getArticolo();
-	
+
 				articolo.setPrezzo(this.getPriceArt(articolo.getCodArt(), credentials));
 			}
-	
+
 			return new ResponseEntity<Articoli>(articolo, HttpStatus.OK);
 		}
 
-	
+
 	// ------------------- Search By Description ------------------------------------
 	/*
 		* this code is an API endpoint that handles HTTP GET requests to retrieve a list of items from a database
@@ -233,7 +233,7 @@ public class ArticoliController
 		logger.info("****** Getting articles with description: " + Filter + " *******");
 
 		String[] credentials = getHttpCredentials(httpRequest.getHeader("Authorization"));
-		
+
 		List<Articoli> articoli = articoliService.SelByDescrizione(Filter + "%");
 
 		if (articoli == null)
@@ -253,7 +253,7 @@ public class ArticoliController
 	}
 
 
-	// ------------------- New Article ------------------------------------ 
+	// ------------------- New Article ------------------------------------
     /*
 	 * This method handles the HTTP POST request for creating a new article.
     */
@@ -283,7 +283,7 @@ public class ArticoliController
 
 		if (checkArt != null)
 		{
-			String MsgErr = String.format("Article %s not found! "
+			String MsgErr = String.format("Article %s found! Duplicate "
 					+ "Impossible POST method", articolo.getCodArt());
 
 			logger.warn(MsgErr);
@@ -315,7 +315,7 @@ public class ArticoliController
     @ApiResponses(value =
     { @ApiResponse(code = 200, message = "Article modified"),
         @ApiResponse(code = 404, message = "Article not modified")})
-    
+
 		@RequestMapping(value = "/modifica", method = RequestMethod.PUT)
 	public ResponseEntity<Articoli> updateArt(@Valid @RequestBody Articoli articolo, BindingResult bindingResult,
 				UriComponentsBuilder ucBuilder) throws BindingException,NotFoundException
@@ -366,7 +366,7 @@ public class ArticoliController
     @ApiResponses(value =
     { @ApiResponse(code = 200, message = "Article removed"),
         @ApiResponse(code = 404, message = "Article not removed")})
-	
+
 		@RequestMapping(value = "/elimina/{codart}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> deleteArt(@PathVariable("codart") String CodArt)
 			throws  NotFoundException

@@ -24,13 +24,15 @@ public class PrezziServiceImpl implements PrezziService
 	@Override
 	public void InsPrezzo(DettListini dettListini) 
 	{
-		prezziRepository.save(dettListini);
-	}
+		DettListini dettPrice = SelPrezzo(dettListini.getCodArt(), dettListini.getIdList());
 
-	@Override
-	public void DelPrezzo(String CodArt, String IdList) 
-	{
-		prezziRepository.DelRowDettList(CodArt, IdList);
+		if (dettPrice == null){
+			prezziRepository.save(dettListini);
+		}else{
+			dettPrice.setPrezzo(dettListini.getPrezzo());
+			prezziRepository.save(dettPrice);
+		}
+		
 	}
 
 }

@@ -42,7 +42,7 @@ services:
       GESTUSER_SRV-URL: http://gestuser:8019/utenti/cerca/userid/
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/alphashop?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       PRICE_SERVICE_URL: http://price:5071/prezzi/
-      PROMO_SERVICE_URL: http://promo:5061/promo/
+      PROMO_SERVICE_URL: http://promo:5062/promo/
 
   ### Container promo
   promo:
@@ -60,6 +60,7 @@ services:
         protocol: tcp
         mode: host
     environment:
+      SERVER_PORT: 5062
       GESTUSER_SRV-URL: http://gestuser:8019/utenti/cerca/userid/
       GESTUSER_USER-ID: ReadUser
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/alphashop?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true

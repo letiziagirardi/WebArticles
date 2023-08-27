@@ -1,0 +1,85 @@
+{
+    // Usare IntelliSense per informazioni sui possibili attributi.
+    // Al passaggio del mouse vengono visualizzate le descrizioni degli attributi esistenti.
+    // Per altre informazioni, visitare: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Application",
+            "request": "launch",
+            "mainClass": "com.webapp.Application",
+            "projectName": "articles_web_service"
+        },
+        {
+            "type": "java",
+            "name": "Application(1)",
+            "request": "launch",
+            "mainClass": "com.webapp.Application",
+            "projectName": "gestuser"
+        },
+        {
+            "type": "java",
+            "name": "Application(2)",
+            "request": "launch",
+            "mainClass": "com.webapp.Application",
+            "projectName": "priceart_web_service"
+        },
+        {
+            "type": "java",
+            "name": "promo_launch",
+            "request": "launch",
+            "mainClass": "com.webapp.Application",
+            "projectName": "promo_web_service"
+        },
+        {
+            "type": "java",
+            "name": "SpringCloudStarterGatewayApplication",
+            "request": "launch",
+            "mainClass": "org.springframework.cloud.springcloudstartergateway.SpringCloudStarterGatewayApplication",
+            "projectName": "spring-cloud-starter-gateway"
+        },
+        {
+            "type": "java",
+            "name": "articles_attach",
+            "request": "attach",
+            "mainClass": "com.webapp.Application",
+            "projectName": "articles_web_service",
+            "hostName": "localhost",
+            "port": 9051
+        },
+        {
+            "type": "java",
+            "name": "gestuser_attach",
+            "request": "attach",
+            "mainClass": "com.webapp.Application",
+            "projectName": "gestuser",
+            "hostName": "localhost",
+            "port": 9019
+        },
+        {
+            "type": "java",
+            "name": "price_attach",
+            "request": "attach",
+            "mainClass": "com.webapp.Application",
+            "projectName": "priceart_web_service",
+            "hostName": "localhost",
+            "port": 9071
+        },
+        {
+            "type": "java",
+            "name": "promo_attach",
+            "request": "attach",
+            "mainClass": "com.webapp.Application",
+            "projectName": "promo_web_service",
+            "hostName": "localhost",
+            "port": 9062
+        }
+    ]
+}
