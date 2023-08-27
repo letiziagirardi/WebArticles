@@ -2,3 +2,8 @@
 database/
 version2/database/*
 database/*
+
+**/mysqlData/*
+mysqlData/
+version2/mysqlData/*
+mysqlData/*
