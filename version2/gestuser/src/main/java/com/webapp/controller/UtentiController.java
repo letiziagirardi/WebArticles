@@ -30,7 +30,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.webapp.model.Utenti;
 
 import com.webapp.service.UtentiService;
-  
+
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping(value = "/utenti")
 public class UtentiController
@@ -43,37 +48,52 @@ public class UtentiController
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 
+  @ApiOperation(
+				value = "Get all Users",
+				response = Utenti.class,
+				produces = "application/json")
+	@ApiResponses(value =
+	{ @ApiResponse(code = 200, message = "Search succeded"),
+	@ApiResponse(code = 404, message = "Search not succeded")})
 	@RequestMapping(value = "/cerca/tutti", method = RequestMethod.GET)
 	public List<Utenti> getAllUser()
 	{
-		LOG.info("Otteniamo tutti gli utenti");
+		LOG.info("Getting all users!");
 
 		return utentiService.SelTutti();
 	}
 
+	@ApiOperation("Get a User by userId")
+	@ApiResponses(value =
+		{ @ApiResponse(code = 200, message = "Search succeded"),
+		@ApiResponse(code = 404, message = "Search not succeded")})
 	@GetMapping(value = "/cerca/userid/{userId}")
 	public Utenti getUtente(@PathVariable("userId") String UserId)
 	{
-		LOG.info("Otteniamo l'utente " + UserId);
+		LOG.info("Getting user with userId " + UserId);
 
 		Utenti retVal = utentiService.SelUser(UserId);
 
 		return retVal;
 	}
 
-	@PostMapping(value = "/inserisci")
+
+  @ApiOperation(
+				value = "Insert a new user")
+	@ApiResponses(value =
+	{ @ApiResponse(code = 200, message = "Insert succeded"),
+	@ApiResponse(code = 404, message = "Insert not succeded")})
+  @PostMapping(value = "/inserisci")
 	public ResponseEntity<Utenti> addNewUser(@Valid @RequestBody Utenti utente,
 		BindingResult bindingResult)
 	{
-		LOG.info("Inserimento Nuovo Utente");
+		LOG.info("Insert new User");
 
 		if (bindingResult.hasErrors())
 		{
-			String MsgErr = "Errore Validazione Password";
+			String MsgErr = "Error in Password validation";
 
 			LOG.warn(MsgErr);
-
-			//throw new BindingException(MsgErr);
 		}
 
 		String encodedPassword = passwordEncoder.encode(utente.getPassword());
@@ -86,11 +106,15 @@ public class UtentiController
 		return ResponseEntity.created(location).build();
 	}
 
-	// ------------------- ELIMINAZIONE UTENTE ------------------------------------
+  @ApiOperation(
+				value = "Deleting user with ID userId")
+	@ApiResponses(value =
+	{ @ApiResponse(code = 200, message = "User Found"),
+	@ApiResponse(code = 404, message = "User not Found")})
 	@DeleteMapping(value = "/elimina/{id}")
 	public ResponseEntity<?> deleteUser(@PathVariable("id") String UserId)
 	{
-		LOG.info("Eliminiamo l'utente con id " + UserId);
+		LOG.info("Deleting User with UserId " + UserId);
 
 		HttpHeaders headers = new HttpHeaders();
 		ObjectMapper mapper = new ObjectMapper();
@@ -103,17 +127,16 @@ public class UtentiController
 
 		if (utente == null)
 		{
-			String MsgErr = String.format("Utente %s non presente in anagrafica! ",UserId);
+			String MsgErr = String.format("User %s not present! ",UserId);
 
 			LOG.warn(MsgErr);
 
-			//throw new NotFoundException(MsgErr);
 		}
 
 		utentiService.Delete(utente);
 
 		responseNode.put("code", HttpStatus.OK.toString());
-		responseNode.put("message", "Eliminazione Utente " + UserId + " Eseguita Con Successo");
+		responseNode.put("message", "Delete User " + UserId + " Done");
 
 		return new ResponseEntity<>(responseNode, headers, HttpStatus.OK);
 	}

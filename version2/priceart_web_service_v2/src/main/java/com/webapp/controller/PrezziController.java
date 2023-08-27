@@ -41,34 +41,35 @@ public class PrezziController
 
 	@Autowired
 	private PrezziService prezziService;
-	 
+
 	@Autowired
 	private AppConfig Config;
-	
+
 	@Autowired
 	private ResourceBundleMessageSource errMessage;
 
 	/*
-	 * The `getPriceCodArt` method is used to find and return the price of a specific article based on its unique code. 
-	 * It retrieves the pricing list identifier from a configuration source, fetches pricing details for the given article code and pricing list, 
+	 * The `getPriceCodArt` method is used to find and return the price of a specific article based on its unique code.
+	 * It retrieves the pricing list identifier from a configuration source, fetches pricing details for the given article code and pricing list,
 	 * and then returns the price if it's found.
 	 * If the pricing details are not available, it logs a warning message and returns a default value of 0.
 	 */
 	@ApiOperation(
-		    value = "Search for the price of an item based on the price list entered in the properties",
-			notes = "Method called by external service. Returns 0 if price not found",
-			response = double.class,
-			produces="application/json")
+		value = "Search for the price of an item based on the price list entered in the properties",
+		notes = "Method called by external service. Returns 0 if price not found",
+		response = double.class, 
+		produces = "application/json")
 	@ApiResponses(value =
-	{ @ApiResponse(code = 200, message = "Calling Ok")})
+	{ @ApiResponse(code = 200, message = "Call Ok")})
 	@RequestMapping(value = "/{codart}", method = RequestMethod.GET)
+	// ------------------- SELECT PREZZO CODART ------------------------------------
 	public double getPriceCodArt(@ApiParam("Code Article") @PathVariable("codart") String CodArt)  
 	{
 		double retVal = 0;
 
 		String IdList = Config.getListino();
 		
-		logger.info("Reference Price List: " + IdList);
+		logger.info("List: " + IdList);
 		
 		DettListini prezzo =  prezziService.SelPrezzo(CodArt, IdList);
 		
@@ -88,35 +89,120 @@ public class PrezziController
 
 	/*
 	 * The `getListCodArt` method is used to fetch and provide pricing details for a particular article identified by its unique code.
-	 * It communicates with a pricing service, handles potential errors, and returns the details as a JSON response entity. 
-	 * The method constructs an HTTP response entity that will contain the pricing details of the requested article. 
+	 * It communicates with a pricing service, handles potential errors, and returns the details as a JSON response entity.
+	 * The method constructs an HTTP response entity that will contain the pricing details of the requested article.
 	 * If the details are missing, it logs a warning and throws an exception with an appropriate error message.
 	 */
-    @RequestMapping(value = "/cerca/codice/{codart}", method = RequestMethod.GET)
-    public ResponseEntity<DettListini> getListCodArt(@PathVariable("codart") String CodArt)  
-        throws NotFoundException
-    {
-        HttpHeaders headers = new HttpHeaders();
-    
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        
-        String IdList = Config.getListino();
-        
-        logger.info("Reference Price List: " + IdList);
-        
-        DettListini dettListini =  prezziService.SelPrezzo(CodArt, IdList);
-        
-        if (dettListini == null)
-        {
-            String ErrMsg = String.format("The %s list price of the code %s was not found!", IdList, CodArt);
-            
-            logger.warn(ErrMsg);
-            
-            throw new NotFoundException(ErrMsg);
-        }
-        
-        return new ResponseEntity<DettListini>(dettListini, HttpStatus.OK);
-            
-    }
+	@ApiOperation(
+				value = "Search for the price of an item based on the code article",
+			 	response = DettListini.class,
+			 	produces="application/json")
+	@ApiResponses(value =
+	{@ApiResponse(code = 200, message = "Price found")})
+	
+	// ------------------- SELECT DETTAGLIO LISTINO ------------------------------------
+	@RequestMapping(value = "/cerca/codice/{codart}", method = RequestMethod.GET)
+	public ResponseEntity<DettListini> getListCodArt(@PathVariable("codart") String CodArt)  
+		throws NotFoundException
+	{
+		HttpHeaders headers = new HttpHeaders();
+	
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		
+		//Otteniamo il listino dal file di configurazione
+		String IdList = Config.getListino();
+		
+		logger.info("Listo: " + IdList);
+		
+		DettListini dettListini =  prezziService.SelPrezzo(CodArt, IdList);
+		
+		if (dettListini == null)
+		{
+			String ErrMsg = String.format("Price list %s of code %s could not be found!", IdList, CodArt);
+			
+			logger.warn(ErrMsg);
+			
+			throw new NotFoundException(ErrMsg);
+		}
+		
+		return new ResponseEntity<DettListini>(dettListini, HttpStatus.OK);
+			
+	}
+
+	/*
+	 * The `createPrice` method handles the creation of a new price entry for an article. 
+	 * It performs input validation, logs relevant information, and returns a response entity with information about the success of the operation.
+	 */
+
+	@ApiOperation(
+				value = "Insert new price for existing article",
+			 	response = DettListini.class,
+			 	produces="application/json")
+	@ApiResponses(value =
+	{@ApiResponse(code = 200, message = "Article added")})
+	// ------------------- INSERT PREZZO LISTINO ------------------------------------
+	@RequestMapping(value = "/inserisci", method = RequestMethod.POST)
+	public ResponseEntity<DettListini> createPrice(@Valid @RequestBody DettListini dettListini, BindingResult bindingResult,
+			UriComponentsBuilder ucBuilder) 
+			throws BindingException 
+	{
+		logger.info(String.format("We save the %s price of the %s item", dettListini.getPrezzo(),  dettListini.getCodArt()));
+		
+		if (bindingResult.hasErrors())
+		{
+			String MsgErr = errMessage.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
+			
+			logger.warn(MsgErr);
+
+			throw new BindingException(MsgErr);
+		}
+		 
+		HttpHeaders headers = new HttpHeaders();
+		ObjectMapper mapper = new ObjectMapper();
+		
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		ObjectNode responseNode = mapper.createObjectNode();
+
+		prezziService.InsPrezzo(dettListini);
+		
+		responseNode.put("code", HttpStatus.OK.toString());
+		responseNode.put("message", "Adding Price " + dettListini.getPrezzo() + " Done Successfullyo");
+
+		return new ResponseEntity<DettListini>(headers, HttpStatus.CREATED);
+	}
+
+	/*
+	 * The `deletePrice` method handles the deletion of a price entry for a specific article. 
+	 * It logs relevant information, performs the deletion, and returns a response entity with 
+	 * information about the success of the operation.
+	 */
+	
+	@ApiOperation(
+				value = "Delete price of existing article",
+			 	response = DettListini.class,
+			 	produces="application/json")
+	@ApiResponses(value =
+	{@ApiResponse(code = 200, message = "Price Deleted")})
+	// ------------------- DELETE PREZZO LISTINO ------------------------------------
+	@RequestMapping(value = "/elimina/{codart}/{idlist}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deletePrice(@PathVariable("codart") String CodArt, @PathVariable("idlist") String IdList)
+	{
+		logger.info(String.format("Elimination of list price %s of item %s",IdList,CodArt));
+
+		HttpHeaders headers = new HttpHeaders();
+		ObjectMapper mapper = new ObjectMapper();
+
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		ObjectNode responseNode = mapper.createObjectNode();
+
+		prezziService.DelPrezzo(CodArt, IdList);
+
+		responseNode.put("code", HttpStatus.OK.toString());
+		responseNode.put("message", "Price Elimination Completed Successfully");
+
+		return new ResponseEntity<>(responseNode, headers, HttpStatus.OK);
+	}
 
 }

@@ -64,62 +64,11 @@ public class ArticoliController
 	@Value("${promo.service.url}")
 	private String promoServiceUrl;
 
-	// ------------------- Search By BarCode Ean ------------------------------------ OK
-    /*
-        * This method defines a REST API endpoint that receives a barcode, retrieves information about an article
-        * using that barcode, calculates its price based on the provided credentials, and returns the article information
-        * along with its calculated price as an HTTP response.
-    */
-    @ApiOperation(
-                value = "Ricerca l'articolo per codice a barre",
-                notes = "Restituisce i dati dell'articolo in formato JSON",
-                response = Articoli.class,
-                produces = "application/json")
-    @ApiResponses(value =
-    { @ApiResponse(code = 200, message = "Articolo Trovato"),
-        @ApiResponse(code = 404, message = "Articolo Non Trovato")})
-    @RequestMapping(value = "/cerca/codice/{codart}", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<Double> listArtByCodArt(@ApiParam("codart univoco dell'articolo") @PathVariable("codart") String CodArt,
-        HttpServletRequest httpRequest)
-            throws NotFoundException
-    {
-		Articoli articolo = null;
-
-		try{
-
-			logger.info("****** Otteniamo la miglior promo attiva sull'articolo con codice " + CodArt + " *******");
-			
-			String[] credentials = getHttpCredentials(httpRequest.getHeader("Authorization"));
-
-			articolo = articoliService.SelByCodArt(CodArt);
-
-			if (articolo == null)
-			{
-				String ErrMsg = String.format("L'articolo con codice %s non è stato trovato!", CodArt);
-				
-				logger.warn(ErrMsg);
-				
-				throw new NotFoundException(ErrMsg);
-			}
-			else
-			{
-
-				articolo.setPrezzo(this.getPriceArt(articolo.getCodArt(), credentials));
-			}
-		} catch(Throwable eThrowable){
-				logger.error("Error in priceart: ", eThrowable);
-				throw eThrowable;
-			}
-
-		return new ResponseEntity<Double>(articolo.getPrezzo(), HttpStatus.OK);
-    
-    }
 	/*
-	 * this method is responsible for fetching the price of an article from an external service
-	 * using the provided URL, article code, and authentication credentials.
-	 * It uses Spring's RestTemplate for making the HTTP request and extracting the price from
-	 * the response. The method returns the fetched price as a Double.
-	 */
+	 * The getPriceArt method is responsible for retrieving the price of an article 
+	 * from an external service using a RESTful HTTP GET request.
+	 * It returns a Double value representing the price of the article.
+	 *  */
 	private Double getPriceArt(String CodArt, String[] Credentials)
 	{
 
@@ -127,7 +76,7 @@ public class ArticoliController
 		try{
 		String ServiceUri = priceServiceUrl + CodArt;
 
-		logger.info("****** Richiesto prezzo al servizio " + ServiceUri + " *******");
+		logger.info("****** Asking price to service " + ServiceUri + " *******");
 
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(Credentials[0], Credentials[1]));
@@ -136,7 +85,7 @@ public class ArticoliController
 
 		Prezzo = responseEntity.getBody();
 
-		logger.info("Prezzo Articolo " + CodArt + ": " + Prezzo);
+		logger.info("Price of Article " + CodArt + ": " + Prezzo);
 		} catch(Throwable eThrowable){
 				logger.error("Error in priceart: ", eThrowable);
 				throw eThrowable;
@@ -145,7 +94,10 @@ public class ArticoliController
 		return Prezzo;
 	}
 
-	
+	/*
+	 * The method getHttpCredentials extracts and decodes the basic authentication credentials 
+	 * from an Authorization header.
+	 */
 	// ------------------- Authorization ------------------------------------
 	private String[] getHttpCredentials(String authorization)
 	{
@@ -163,112 +115,101 @@ public class ArticoliController
 		return values;
 	}
 
-
-	// ------------------- Search By CodArt ------------------------------------
-	@ApiOperation(
-				value = "Ricerca l'articolo per codice CodArt",
-				notes = "Restituisce i dati dell'articolo in formato JSON",
-				response = Articoli.class,
-				produces = "application/json")
-	@ApiResponses(value =
-	{ @ApiResponse(code = 200, message = "Articolo Trovato"),
-		@ApiResponse(code = 404, message = "Articolo Non Trovato")})
-	@RequestMapping(value = "/cerca/promo/codice/{codart}", method = RequestMethod.GET, produces = "application/json")
-	public ResponseEntity<Double> listPromoByCodArt(@PathVariable("codart") String CodArt,
-		HttpServletRequest httpRequest)
-			throws NotFoundException
-	{
-		logger.info("****** Otteniamo la miglior promo attiva sull'articolo con codice " + CodArt + " *******");
-		
-		String[] credentials = getHttpCredentials(httpRequest.getHeader("Authorization"));
-
-		Articoli articolo = articoliService.SelByCodArt(CodArt);
-
-		if (articolo == null)
-		{
-			String ErrMsg = String.format("L'articolo con codice %s non è stato trovato!", CodArt);
-			
-			logger.warn(ErrMsg);
-			
-			throw new NotFoundException(ErrMsg);
-		}
-		else
-		{
-
-			articolo.setPrezzo(this.getPromoPriceArtByCodArt(articolo.getCodArt(), credentials));
-		}
-
-		return new ResponseEntity<Double>(articolo.getPrezzo(), HttpStatus.OK);
-	}
-	/*
-	* this method is responsible for fetching the promo of an article from an external service
-	* using the provided URL, article code, and authentication credentials.
-	* It uses Spring's RestTemplate for making the HTTP request and extracting the price from
-	* the response. The method returns the fetched price as a Double.
-	*/
-	private Double getPromoPriceArtByCodArt(String CodArt, String[] Credentials)
-	{
-
-		String ServiceUri = promoServiceUrl + CodArt;
-
-		logger.info("****** Richiesto prezzo al servizio " + ServiceUri + " *******");
-
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(Credentials[0], Credentials[1]));
-
-		ResponseEntity<Double> responseEntity = restTemplate.getForEntity(ServiceUri, Double.class);
-
-		Double Prezzo = responseEntity.getBody();
-
-		logger.info("Prezzo Articolo " + CodArt + ": " + Prezzo);
-
-		return Prezzo;
-	}
-
 	// ------------------- Search By BarCode Ean ------------------------------------ OK
     /*
-        * This method defines a REST API endpoint that receives a barcode, retrieves information about an article
-        * using that barcode, calculates its price based on the provided credentials, and returns the article information
-        * along with its calculated price as an HTTP response.
+	 * This method handles the HTTP GET request for retrieving article information based on a barcode.
     */
     @ApiOperation(
-                value = "Ricerca l'articolo per codice a barre",
-                notes = "Restituisce i dati dell'articolo in formato JSON",
+                value = "Search details about Article with code codArt",
+                notes = "Returns article data in JSON format",
                 response = Articoli.class,
                 produces = "application/json")
     @ApiResponses(value =
-    { @ApiResponse(code = 200, message = "Articolo Trovato"),
-        @ApiResponse(code = 404, message = "Articolo Non Trovato")})
-    @RequestMapping(value = "/cerca/ean/{barcode}", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<Articoli> listArtByEan(@ApiParam("Barcode univoco dell'articolo") @PathVariable("barcode") String Barcode,
+    { @ApiResponse(code = 200, message = "Article  found"),
+        @ApiResponse(code = 404, message = "Article not found")})
+    @RequestMapping(value = "/cerca/codice/{codart}", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<Articoli> listArtByCodArt(@ApiParam("unique codart") @PathVariable("codart") String CodArt,
         HttpServletRequest httpRequest)
             throws NotFoundException
     {
-        logger.info("****** Otteniamo l'articolo con barcode " + Barcode + " *******");
+		Articoli articolo = null;
 
-        String[] credentials = getHttpCredentials(httpRequest.getHeader("Authorization"));
+		try{
 
-        Articoli articolo;
-        Barcode Ean = barcodeService.SelByBarcode(Barcode);
+			logger.info("****** Getting the best promo active on the article with codArt " + CodArt + " *******");
+			
+			String[] credentials = getHttpCredentials(httpRequest.getHeader("Authorization"));
+			logger.info("credentials:" + credentials);
 
-        if (Ean == null)
-        {
-            String ErrMsg = String.format("Il barcode %s non è stato trovato!", Barcode);
+			articolo = articoliService.SelByCodArt(CodArt);
 
-            logger.warn(ErrMsg);
+			if (articolo == null)
+			{
+				String ErrMsg = String.format("Article %s not found!", CodArt);
+				
+				logger.warn(ErrMsg);
+				
+				throw new NotFoundException(ErrMsg);
+			}
+			else
+			{
 
-            throw new NotFoundException(ErrMsg);
-        }
-        else
-        {
-            articolo = Ean.getArticolo();
+				articolo.setPrezzo(this.getPriceArt(articolo.getCodArt(), credentials));
+			}
+		} catch(Throwable eThrowable){
+				logger.error("Error in priceart: ", eThrowable);
+				throw eThrowable;
+			}
 
-            articolo.setPrezzo(this.getPriceArt(articolo.getCodArt(), credentials));
-        }
-
-        return new ResponseEntity<Articoli>(articolo, HttpStatus.OK);
+		return new ResponseEntity<Articoli>(articolo, HttpStatus.OK);
+    
     }
 
+	// ------------------- Search By BarCode Ean ------------------------------------ OK
+    /*
+	 * This method handles the HTTP GET request for retrieving article information based on a barcode.
+    */
+    @ApiOperation(
+                value = "Search details about Article with barcode EAN",
+                notes = "Returns article data in JSON format",
+                response = Articoli.class,
+                produces = "application/json")
+    @ApiResponses(value =
+    { @ApiResponse(code = 200, message = "Article found"),
+    @ApiResponse(code = 404, message = "Article not found")})
+	
+	@RequestMapping(value = "/cerca/ean/{barcode}", method = RequestMethod.GET, produces = "application/json")
+		public ResponseEntity<Articoli> listArtByEan(@ApiParam("Barcode") @PathVariable("barcode") String Barcode,
+			HttpServletRequest httpRequest)
+				throws NotFoundException
+		{
+			logger.info("****** Getting Article with Barcode " + Barcode + " *******");
+	
+			String[] credentials = getHttpCredentials(httpRequest.getHeader("Authorization"));
+
+			Articoli articolo;
+			Barcode Ean = barcodeService.SelByBarcode(Barcode);
+	
+			if (Ean == null)
+			{
+				String ErrMsg = String.format("Barcode %s not found!", Barcode);
+	
+				logger.warn(ErrMsg);
+	
+				throw new NotFoundException(ErrMsg);
+				//return new ResponseEntity<Articoli>(HttpStatus.NOT_FOUND);
+			}
+			else
+			{
+				articolo = Ean.getArticolo();
+	
+				articolo.setPrezzo(this.getPriceArt(articolo.getCodArt(), credentials));
+			}
+	
+			return new ResponseEntity<Articoli>(articolo, HttpStatus.OK);
+		}
+
+	
 	// ------------------- Search By Description ------------------------------------
 	/*
 		* this code is an API endpoint that handles HTTP GET requests to retrieve a list of items from a database
@@ -277,35 +218,185 @@ public class ArticoliController
 		* Otherwise, it returns the list of items in JSON format as the response.
 	*/
 	@ApiOperation(
-				value = "Ricerca l'articolo per descrizione",
-				notes = "Restituisce i dati dell'articolo in formato JSON",
+				value = "Search of article by description",
+				notes = "Returns article data in JSON format",
 				response = Articoli.class,
 				produces = "application/json")
 	@ApiResponses(value =
-	{ @ApiResponse(code = 200, message = "Articolo Trovato"),
-	@ApiResponse(code = 404, message = "Articolo Non Trovato")})
+	{ @ApiResponse(code = 200, message = "Article found"),
+	@ApiResponse(code = 404, message = "Article not found")})
+
 	@RequestMapping(value = "/cerca/descrizione/{filter}", method = RequestMethod.GET, produces = "application/json")
-	public ResponseEntity<List<Articoli>> listArtByDesc(@PathVariable("filter") String Filter,
-		HttpServletRequest httpRequest)
+	public ResponseEntity<List<Articoli>> listArtByDesc(@PathVariable("filter") String Filter, HttpServletRequest httpRequest)
 			throws NotFoundException
 	{
-		logger.info("****** We get the items with Description: " + Filter + " *******");
+		logger.info("****** Getting articles with description: " + Filter + " *******");
 
+		String[] credentials = getHttpCredentials(httpRequest.getHeader("Authorization"));
+		
 		List<Articoli> articoli = articoliService.SelByDescrizione(Filter + "%");
 
 		if (articoli == null)
 		{
-			String ErrMsg = String.format("No item with description %s was found", Filter);
+			String ErrMsg = String.format("No article with description %s found", Filter);
 
 			logger.warn(ErrMsg);
 
 			throw new NotFoundException(ErrMsg);
-
+		}
+		else
+		{
+			articoli.forEach(f -> f.setPrezzo(this.getPriceArt(f.getCodArt(),credentials)));
 		}
 
 		return new ResponseEntity<List<Articoli>>(articoli, HttpStatus.OK);
 	}
 
 
+	// ------------------- New Article ------------------------------------ 
+    /*
+	 * This method handles the HTTP POST request for creating a new article.
+    */
+    @ApiOperation(
+                value = "Create new Article")
+    @ApiResponses(value =
+    { @ApiResponse(code = 200, message = "Article  insert"),
+        @ApiResponse(code = 404, message = "Article not insert")})
+
+		@RequestMapping(value = "/inserisci", method = RequestMethod.POST)
+	public ResponseEntity<Articoli> createArt(@Valid @RequestBody Articoli articolo, BindingResult bindingResult,
+			UriComponentsBuilder ucBuilder)
+			throws BindingException, DuplicateException
+	{
+		logger.info("Insert article with codArt " + articolo.getCodArt());
+
+		if (bindingResult.hasErrors())
+		{
+			String MsgErr = errMessage.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
+
+			logger.warn(MsgErr);
+
+			throw new BindingException(MsgErr);
+		}
+
+		Articoli checkArt =  articoliService.SelByCodArt(articolo.getCodArt());
+
+		if (checkArt != null)
+		{
+			String MsgErr = String.format("Article %s not found! "
+					+ "Impossible POST method", articolo.getCodArt());
+
+			logger.warn(MsgErr);
+
+			throw new DuplicateException(MsgErr);
+		}
+
+		HttpHeaders headers = new HttpHeaders();
+		ObjectMapper mapper = new ObjectMapper();
+
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		ObjectNode responseNode = mapper.createObjectNode();
+
+		articoliService.InsArticolo(articolo);
+
+		responseNode.put("code", HttpStatus.OK.toString());
+		responseNode.put("message", "Insert Article " + articolo.getCodArt() + " Done");
+
+		return new ResponseEntity<Articoli>(headers, HttpStatus.CREATED);
+	}
+
+// ------------------- Change existing article ------------------------------------ OK
+    /*
+	 * This method handles the HTTP PUT request for modifying data of an existing article.
+    */
+    @ApiOperation(
+                value = "Modify data of existing article")
+    @ApiResponses(value =
+    { @ApiResponse(code = 200, message = "Article modified"),
+        @ApiResponse(code = 404, message = "Article not modified")})
+    
+		@RequestMapping(value = "/modifica", method = RequestMethod.PUT)
+	public ResponseEntity<Articoli> updateArt(@Valid @RequestBody Articoli articolo, BindingResult bindingResult,
+				UriComponentsBuilder ucBuilder) throws BindingException,NotFoundException
+	{
+		logger.info("Change article with code " + articolo.getCodArt());
+
+		if (bindingResult.hasErrors())
+		{
+			String MsgErr = errMessage.getMessage(bindingResult.getFieldError(), LocaleContextHolder.getLocale());
+
+			logger.warn(MsgErr);
+
+			throw new BindingException(MsgErr);
+		}
+
+		Articoli checkArt =  articoliService.SelByCodArt(articolo.getCodArt());
+
+		if (checkArt == null)
+		{
+			String MsgErr = String.format("Article %s not found! "
+					+ "Impossible to use PUT method", articolo.getCodArt());
+
+			logger.warn(MsgErr);
+
+			throw new NotFoundException(MsgErr);
+		}
+
+		HttpHeaders headers = new HttpHeaders();
+		ObjectMapper mapper = new ObjectMapper();
+
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		ObjectNode responseNode = mapper.createObjectNode();
+
+		articoliService.InsArticolo(articolo);
+
+		responseNode.put("code", HttpStatus.OK.toString());
+		responseNode.put("message", "Change Article " + articolo.getCodArt() + " Done");
+
+		return new ResponseEntity<Articoli>(headers, HttpStatus.CREATED);
+	}
+	// ------------------- Remove existing article ------------------------------------ OK
+    /*
+	 * This method handles the HTTP PUT request for removing an existing article.
+    */
+    @ApiOperation(
+                value = "Remove an existing article")
+    @ApiResponses(value =
+    { @ApiResponse(code = 200, message = "Article removed"),
+        @ApiResponse(code = 404, message = "Article not removed")})
+	
+		@RequestMapping(value = "/elimina/{codart}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteArt(@PathVariable("codart") String CodArt)
+			throws  NotFoundException
+	{
+		logger.info("Remove article with codArt " + CodArt);
+
+		HttpHeaders headers = new HttpHeaders();
+		ObjectMapper mapper = new ObjectMapper();
+
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		ObjectNode responseNode = mapper.createObjectNode();
+
+		Articoli articolo = articoliService.SelByCodArt(CodArt);
+
+		if (articolo == null)
+		{
+			String MsgErr = String.format("Article %s not found! ",CodArt);
+
+			logger.warn(MsgErr);
+
+			throw new NotFoundException(MsgErr);
+		}
+
+		articoliService.DelArticolo(articolo);
+
+		responseNode.put("code", HttpStatus.OK.toString());
+		responseNode.put("message", "Remove article " + CodArt + " Done");
+
+		return new ResponseEntity<>(responseNode, headers, HttpStatus.OK);
+	}
 
 }

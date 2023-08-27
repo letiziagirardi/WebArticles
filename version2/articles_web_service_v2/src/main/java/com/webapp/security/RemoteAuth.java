@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.webapp.exception.NoConnexException;
-import com.webapp.security.Utenti;
 import com.webapp.userconf.UserConfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +51,7 @@ public class RemoteAuth
 		} 
 		catch (Exception e) 
 		{
-			String ErrMsg = String.format("Connessione al servizio di autenticazione non riuscita!!");
+			String ErrMsg = String.format("Failed to connect to authentication service!!");
 			
 			logger.warn(ErrMsg);
 			

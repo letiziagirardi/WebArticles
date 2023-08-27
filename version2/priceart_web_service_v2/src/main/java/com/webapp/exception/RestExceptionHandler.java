@@ -51,7 +51,7 @@ public class RestExceptionHandler extends
 	{
 		ErrorResponse errore = new ErrorResponse();
 		
-		errore.setMessaggio("La richiesta non può essere eseguita a causa di un errore generico");
+		errore.setMessaggio("The request could not be performed due to a generic error");
 		errore.setCodice(HttpStatus.BAD_REQUEST.value());
 		
 		return new ResponseEntity<ErrorResponse>(errore, HttpStatus.BAD_REQUEST);

@@ -28,6 +28,10 @@ import com.webapp.exception.BindingException;
 import com.webapp.exception.NotFoundException;
 import com.webapp.service.PromoService;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping("/promo")
 public class PromoController
@@ -45,6 +49,15 @@ public class PromoController
 	 * dealing with cases where no offers are found. 
 	 */
 		
+	@ApiOperation(
+		value = "Search for all Promo",
+		notes = "Returns article data in JSON format",
+		response = Promo.class,
+		produces = "application/json")
+	@ApiResponses(value =
+	{ @ApiResponse(code = 200, message = "Promos found"),
+		@ApiResponse(code = 404, message = "Promos not found")})
+	
 	@RequestMapping(value = "/cerca/tutti", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<List<Promo>> listAllPromo()
 			throws NotFoundException
@@ -67,12 +80,21 @@ public class PromoController
 		return new ResponseEntity<List<Promo>>(promo, HttpStatus.OK);
 	}
 
+
 	/*
 	 *  The 'listPromoById' method handles retrieving a specific promotional offer from the database based on its ID, 
 	 * dealing with cases where no offer is found.
 	 */
-
-    @RequestMapping(value = "/cerca/id/{idpromo}", method = RequestMethod.GET, produces = "application/json")
+    @ApiOperation(
+		value = "Search for Promo given IdPromo",
+		notes = "Returns article data in JSON format",
+		response = Promo.class,
+		produces = "application/json")
+	@ApiResponses(value =
+	{ @ApiResponse(code = 200, message = "Promo found"),
+		@ApiResponse(code = 404, message = "Promo not found")})
+		
+	@RequestMapping(value = "/cerca/id/{idpromo}", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<Promo> listPromoById(@PathVariable("idpromo") String IdPromo) 
             throws NotFoundException
     {
@@ -88,8 +110,7 @@ public class PromoController
             
             throw new NotFoundException(ErrMsg);
         }
-        
-        
+
         return new ResponseEntity<Promo>(promo, HttpStatus.OK);
     }
 
@@ -97,7 +118,14 @@ public class PromoController
 	 * The 'createPromo' method handles the creation of a new promotional offer by validating the incoming data, 
 	 * inserting it into the database, and providing a response with appropriate status.
 	 */
-	
+	@ApiOperation(
+		value = "Insert a new Promo",
+		response = Promo.class,
+		produces = "application/json")
+	@ApiResponses(value =
+	{ @ApiResponse(code = 200, message = "Promo added"),
+		@ApiResponse(code = 404, message = "Promo not added")})
+		
 	@RequestMapping(value = "/inserisci", method = RequestMethod.POST)
     public ResponseEntity<Promo> createPromo(@Valid @RequestBody Promo promo, BindingResult bindingResult,
             UriComponentsBuilder ucBuilder) 
@@ -126,6 +154,12 @@ public class PromoController
 	 * The deletePromo method handles the deletion of a specific promotional offer from the database, 
 	 * providing a response with appropriate status, headers, and a JSON message indicating the outcome of the deletion.
 	 */
+	@ApiOperation(
+		value = "Deletion of a specific Promo given IdPromo")
+	@ApiResponses(value =
+	{ @ApiResponse(code = 200, message = "Promo deleted"),
+		@ApiResponse(code = 404, message = "Promo not deleted")})
+		
 	@RequestMapping(value = "/elimina/{idpromo}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deletePromo(@PathVariable("idpromo") String IdPromo) 
             throws NotFoundException

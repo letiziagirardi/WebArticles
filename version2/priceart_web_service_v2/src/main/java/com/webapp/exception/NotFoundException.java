@@ -4,7 +4,7 @@ public class NotFoundException  extends Exception
 {
 	private static final long serialVersionUID = 1L;
 	
-	private String messaggio = "Elemento Ricercato Non Trovato!";
+	private String messaggio = "Article Not Found!";
 	
 	public NotFoundException()
 	{

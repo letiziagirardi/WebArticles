@@ -34,39 +34,57 @@ services:
         published: 5051
         protocol: tcp
         mode: host
+      - target: 9051
+        published: 9051
+        protocol: tcp
+        mode: host
     environment:
       GESTUSER_SRV-URL: http://gestuser:8019/utenti/cerca/userid/
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/alphashop?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      PRICE_SERVICE_URL: http://price:5071/prezzi/
+      PROMO_SERVICE_URL: http://promo:5061/promo/
 
   ### Container promo
   promo:
     build: promo_web_service_v2/docker
     container_name: promo
+    depends_on:
+      - mysql
     ports:
-      - target: 5061
-        published: 5061
+      - target: 5062
+        published: 5062
+        protocol: tcp
+        mode: host
+      - target: 9062
+        published: 9062
         protocol: tcp
         mode: host
     environment:
       GESTUSER_SRV-URL: http://gestuser:8019/utenti/cerca/userid/
       GESTUSER_USER-ID: ReadUser
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/alphashop?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    depends_on:
-      - mysql
+      PRICE_SERVICE_URL: http://price:5071/prezzi/
+
 
   ### Container price
   price:
     build: priceart_web_service_v2/docker
     container_name: price
+    depends_on:
+      - mysql
     ports:
       - target: 5071
         published: 5071
         protocol: tcp
+        mode: host
+      - target: 9071
+        published: 9071
+        protocol: tcp
+        mode: host
     environment:
       GESTUSER_SRV-URL: http://gestuser:8019/utenti/cerca/userid/
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/alphashop?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    depends_on:
-      - mysql
+
 
   ### Container gestuser
   gestuser:
@@ -76,6 +94,11 @@ services:
       - target: 8019
         published: 8019
         protocol: tcp
+        mode: host
+      - target: 9019
+        published: 9019
+        protocol: tcp
+        mode: host
     depends_on:
       - mongouser
     environment:
@@ -93,6 +116,7 @@ services:
     restart: always
     volumes:
       - ./mongo/:/etc/mongo
+      - ./database/:/data/db
     command: mongod --port 27018 --bind_ip 0.0.0.0
     ports:
       - target: 27018
@@ -113,7 +137,7 @@ services:
     environment:
      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
      ME_CONFIG_MONGODB_ADMINPASSWORD: 123_Stella
-     ME_CONFIG_MONGODB_URL: mongodb://mongouser:27018/
+     ME_CONFIG_MONGODB_URL: mongodb://admin:123_Stella@mongouser:27018/
     depends_on:
      - mongouser
 

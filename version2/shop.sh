@@ -7,15 +7,35 @@ build_service() {
   cp target/*.jar docker/app.jar
 }
 
-build_mongodb(){
-  sleep 10
-  # mongosh --host localhost --port 27018 --authenticationDatabase admin < createMongoUsers.txt
-  mongosh --host localhost --port 27018 -u admin -p 123_Stella --authenticationDatabase admin < createMongoUsers.txt
-}
+
+# create_user(){
+#   # Prompt the user for userId
+#   read -p "Please enter userId: " userId
+#
+#   # Prompt the user for password
+#   read -s -p "Please enter password: " password
+#   echo
+#
+#   # Make the curl request with user input
+#   curl -X POST "http://localhost:8080/gestuser/utenti/inserisci" \
+#        -H "Content-Type: application/json" \
+#        -d "{
+#            \"userId\": \"$userId\",
+#            \"password\": \"$password\",
+#            \"attivo\": \"Si\",
+#            \"ruoli\": [
+#                \"USER\",
+#                \"ADMIN\"
+#            ]
+#        }" \
+#        -u "Admin:MagicaBula_2018"
+#
+# }
 
 build_main() {
   docker compose down
-  docker builder prune -a -f
+#  docker builder prune -a -f  forcefully clean up unused build cache
+  docker image prune -a
   echo "docker compose down: clean up"
 
   cd articles_web_service_v2
@@ -36,8 +56,14 @@ build_main() {
   cd ..
   docker compose up -d
 
-  # building MongoDB gestuser
-  build_mongodb
+  # # Prompt the user for input
+  # echo "Please enter the command: "
+  # read command
+  # echo "command $command"
+  #
+
+
+
 
 
 }
@@ -46,7 +72,7 @@ case $1 in
   build)
     build_main
     ;;
-  Romania|Moldova)
+  a)
     echo "Romanian"
     ;;
   Italy|"San Marino"|Switzerland|"Vatican City")
@@ -56,3 +82,18 @@ case $1 in
     echo "unknown"
     ;;
 esac
+
+# case $command in
+#   createUser)
+#     create_user
+#     ;;
+#   )
+#     echo "Romanian"
+#     ;;
+#   Italy|"San Marino"|Switzerland|"Vatican City")
+#     echo "Italian"
+#     ;;
+#   *)
+#     echo "unknown"
+#     ;;
+# esac

@@ -17,7 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-//@Profile(value = {"development", "production"})
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 {
 	private static String REALM = "REAME";
@@ -25,7 +24,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 	private static final String[] USER_MATCHER = { "/prezzo/promo/**", "/promo/cerca/**" };
 	private static final String[] ADMIN_MATCHER = { "/promo/inserisci/**", "/promo/elimina/**"};
 	private static final String[] AUTH_WHITELIST = {
-		// -- swagger ui
 		"/api/",
 		"/api/**",
 		"/v2/api-docs",
@@ -50,8 +48,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 				.antMatchers(USER_MATCHER).hasAnyRole("USER")
 				.antMatchers(ADMIN_MATCHER).hasAnyRole("ADMIN")
 				.antMatchers(AUTH_WHITELIST).permitAll()
-				// .anyRequest().authenticated()
-				.antMatchers("/**").authenticated()
+				.anyRequest().authenticated()
 				.and()
 				.httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint()).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

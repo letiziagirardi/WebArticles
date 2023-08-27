@@ -1,7 +1,7 @@
 spring:
   main.allow-bean-definition-overriding: true
   application:
-    name: gateway-service  
+    name: gateway-service
   cloud:
     gateway:
       httpclient:
@@ -10,30 +10,30 @@ spring:
       routes:
       - id: articles
         uri: http://articles:5051/
-        predicates: 
-          - Path=/articles/** 
-        filters: 
+        predicates:
+          - Path=/articles/**
+        filters:
           - RewritePath=/articles/(?<segment>.*),/$\{segment}
       - id: promo
-        uri: http://promo:5061/
-        predicates: 
-          - Path=/promo/** 
-        filters: 
+        uri: http://promo:5062/
+        predicates:
+          - Path=/promo/**
+        filters:
           - RewritePath=/promo/(?<segment>.*),/$\{segment}
       - id: price
         uri: http://price:5071/
-        predicates: 
-          - Path=/price/** 
-        filters: 
+        predicates:
+          - Path=/price/**
+        filters:
           - RewritePath=/price/(?<segment>.*),/$\{segment}
       - id: gestuser
         uri: http://gestuser:8019/
-        predicates: 
-          - Path=/gestuser/** 
-        filters: 
+        predicates:
+          - Path=/gestuser/**
+        filters:
           - RewritePath=/gestuser/(?<segment>.*),/$\{segment}
-            
-            
+
+
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
@@ -41,8 +41,8 @@ logging:
     org.springframework.web.reactive: DEBUG
     reactor.ipc.netty: DEBUG
     reactor.netty: DEBUG
-    
-#Important we must ovverride Netty classes to increase Max Frame Payload Lenght   
+
+#Important we must ovverride Netty classes to increase Max Frame Payload Lenght
 spring.main.allow-bean-definition-overriding: true
 #Used by Netty - with the default the proxy return errors when a large data vaadin grid are used
 maxframepayloadlenght: 10485760

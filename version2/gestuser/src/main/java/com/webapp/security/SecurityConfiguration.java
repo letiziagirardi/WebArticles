@@ -19,10 +19,22 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 {
 	private static String REALM = "REAME";
-	
+
 	private static final String[] USER_MATCHER = { "/utenti/cerca/**"};
 	private static final String[] ADMIN_MATCHER = { "/utenti/inserisci/**", "/utenti/elimina/**" };
-
+	private static final String[] AUTH_WHITELIST = {
+		// -- swagger ui
+		"/api/",
+		"/api/**",
+		"/v2/api-docs",
+		"/swagger-resources",
+		"/swagger-resources/**",
+		"/configuration/ui",
+		"/configuration/security",
+		"/swagger-ui/**",
+		"/swagger-ui.html",
+		"/webjars/**"
+	};
 	@Override
 	protected void configure(HttpSecurity http) throws Exception
 	{
@@ -30,19 +42,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 				.authorizeRequests()
 				.antMatchers(USER_MATCHER).hasAnyRole("USER")
 				.antMatchers(ADMIN_MATCHER).hasAnyRole("ADMIN")
+				.antMatchers(AUTH_WHITELIST).permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint()).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
-	
+
+
 	@Bean
 	public AuthEntryPoint getBasicAuthEntryPoint()
 	{
 		return new AuthEntryPoint();
 	}
 
-	/* To allow Pre-flight [OPTIONS] request from browser */
 	@Override
 	public void configure(WebSecurity web) throws Exception
 	{

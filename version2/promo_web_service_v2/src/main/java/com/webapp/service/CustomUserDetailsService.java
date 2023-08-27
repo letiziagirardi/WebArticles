@@ -91,7 +91,6 @@ public class CustomUserDetailsService implements UserDetailsService
 		}
 
 		RestTemplate restTemplate = new RestTemplate(); //used for archestration
-		logger.info("user id"+Config.getUserId() + " pass "+ Config.getPassword());
 		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(Config.getUserId(), Config.getPassword()));
 
 		Utenti utente = null;

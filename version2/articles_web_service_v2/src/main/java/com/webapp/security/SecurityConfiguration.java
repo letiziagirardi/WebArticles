@@ -17,7 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-//@Profile(value = {"development", "production"})
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 {
 	private static String REALM = "REAME";
@@ -25,7 +24,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 	private static final String[] USER_MATCHER = { "/prezzi/cerca/**", "/prezzi/**", "/info", "actuator/**"};
 	private static final String[] ADMIN_MATCHER = { "/prezzi/inserisci/**", "/prezzi/elimina/**"};
 	private static final String[] AUTH_WHITELIST = {
-		// -- swagger ui
 		"/api/",
 		"/api/**",
 		"/v2/api-docs",
