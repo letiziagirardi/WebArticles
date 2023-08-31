@@ -4,23 +4,31 @@ Final project for Service Design and Engineering. Letizia Girardi, a.y. 2022/23.
 
 ## Running the project
 
-In order to build and use this project, from the root folder of the project, please run:
+In order to build the correct environment, from the root folder of the project, please run:
 
 ```
-bash shop.sh build
+cd version2
+bash shop.sh build 
 ```
 
-This command provides the CLI client of the service: once the services are initiated, a shell will be presented, showcasing the available commands. 
+In order to effetivelly use the project, from the current folder, please run:
+
+```
+cd CLI
+python webArticle.py <command>
+```
+
+This command provides the CLI of the service. To learn more about the available commands and options, run `python webArticle.py --help`.
 
 
 ## Original Proposal
 The project WebArticles is a comprehensive initiative designed to offer an advanced service for efficiently managing products. This includes the integration of independent services to facilitate the acquisition of promotional offers and pricing information. The service will offer valuable insights into available articles, associated promotions, and the most favorable pricing options.
 
 The service employs a microservices architecture, consisting in the operation of indipendent microservises whhich operate to fulfill specific roles:
-* Articles Service: Manages articles and interacts with the price and promo services to provide article information and related price.
-* Promo Service: This service handles promotional activities, providing active promos.
-* Price Service: Deals with price-related information. Receives requests from the articles service. 
-* Gestuser Service: This service is responsible for user authentication and authorization, providing access control to other services. Moreover, it is possible to create and managing users' profiles.
+* **Articles Service**: Manages articles and interacts with the price and promo services to provide article information and related price.
+* **Promo Service**: This service handles promotional activities, providing active promos.
+* **Price Service**: Deals with price-related information. Receives requests from the articles service. 
+* **Gestuser Service**: This service is responsible for user authentication and authorization, providing access control to other services. Moreover, it is possible to create and managing users' profiles.
 
 Finally, In order to simplify client interaction, handle authentication and authorization across all microservices and distribute incoming requests across multiple instances of services, the API Gateway service has been implemented.
 
