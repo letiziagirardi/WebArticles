@@ -28,9 +28,9 @@ public class PrezziPromoController
 	private DettPromoService dettPromoService;
 
 	/*
-	 * The getPricePromoCodArt method handles the retrieval of the minimum promotional price for a specific article. 
-	 * It interacts with a service to fetch the promotional details, filters and calculates 
-	 * the minimum promotional price. 
+	 * The getPricePromoCodArt method handles the retrieval of the minimum promotional price for a specific article.
+	 * It interacts with a service to fetch the promotional details, filters and calculates
+	 * the minimum promotional price.
 	 * If no promotional prices are found, it returns null.
 	 */
 	@ApiOperation(
@@ -40,26 +40,26 @@ public class PrezziPromoController
 	@ApiResponses(value =
 	{ @ApiResponse(code = 200, message = "Best Price found"),
 		@ApiResponse(code = 404, message = "Best Price not found")})
-	
+
 	@RequestMapping(value = "/promo/codice/{codart}", method = RequestMethod.GET)
-	public OptionalDouble getPricePromoCodArt(@PathVariable("codart") String CodArt)  
+	public OptionalDouble getPricePromoCodArt(@PathVariable("codart") String CodArt)
 	{
 		OptionalDouble Prezzo = null;
-		
+
 		List<DettPromo> dettPromo = dettPromoService.SelDettPromoByCode(CodArt);
 		logger.info("Promo List: " + dettPromo);
 
-		
+
 		if (dettPromo != null)
 		{
 			Prezzo = dettPromo.stream()
 					.filter(v -> v.getCodfid() == null)
 					.mapToDouble(v -> Double.parseDouble(v.getOggetto().replace(",", "."))).min();
-			
+
 			logger.info("Price Article given the Promo : " + Prezzo);
-		
+
 		}
-		
-		return Prezzo;	
+
+		return Prezzo;
 	}
 }

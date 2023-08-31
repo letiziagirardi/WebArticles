@@ -22,8 +22,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 {
 	private static String REALM = "REAME";
 
-	private static final String[] USER_MATCHER = { "/info", "/prezzi/**" };
-	private static final String[] ADMIN_MATCHER = { };
+	private static final String[] USER_MATCHER = { "/prezzi/cerca/**" };
+	private static final String[] ADMIN_MATCHER = { "/prezzi/inserisci"};
 	private static final String[] AUTH_WHITELIST = {
 		// -- swagger ui
 		"/api/",

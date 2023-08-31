@@ -1,0 +1,193 @@
+
+
+
+TESTING
+
+Utente | password | role |
+--------------------------
+admin  | admin    | admin|
+--------------------------
+user   | user     | user |
+--------------------------
+both   | both     | both |
+--------------------------
+
+======================= GestUser
+
+curl --location 'http://localhost:8080/gestuser/utenti/inserisci' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic QWRtaW46TWFnaWNhQnVsYV8yMDE4' \
+--data '{
+    "userId": "panda",
+    "password": "panda",
+    "attivo": "Si",
+    "ruoli": [
+        "USER",
+        "ADMIN"
+    ]
+}'
+
+curl --location 'http://localhost:8080/gestuser/utenti/cerca/userid/Mario' \
+--header 'Authorization: Basic UmVhZFVzZXI6QmltQnVtQmFtXzIwMTg='
+
+curl --location 'http://localhost:8080/gestuser/utenti/cerca/tutti' \
+--header 'Authorization: Basic UmVhZFVzZXI6QmltQnVtQmFtXzIwMTg='
+
+curl --location --request DELETE 'http://localhost:8080/gestuser/utenti/elimina/Mario' \
+--header 'Authorization: Basic QWRtaW46TWFnaWNhQnVsYV8yMDE4' \
+--data ''
+
+======================= Price
+
+USER BOTH
+curl -u both:both --location 'http://localhost:8080/price/prezzi/cerca/codice/000001501'
+
+---nobody
+curl -u admin:admin --location 'http://localhost:8080/price/prezzi/002000301'
+
+ADMIN
+curl admin:admin --location 'http://localhost:8080/price/prezzi/inserisci' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic TWFyaW86VmVyeVNlY3JldFB3ZA==' \
+--data '{
+    "codArt":  "000001501",
+    "idList":  "1",
+    "prezzo":  1.99
+    		}'
+
+======================= Articles
+
+USER BOTH
+curl -u user:user --location 'http://localhost:8080/articles/articoli/cerca/ean/0000099200992'
+curl -u both:both --location 'http://localhost:8080/articles/articoli/cerca/ean/0000099200992'
+
+USER BOTH
+curl -u user:user --location 'http://localhost:8080/articles/articoli/cerca/codice/002000301'
+curl -u both:both --location 'http://localhost:8080/articles/articoli/cerca/codice/002000301'
+
+USER BOTH
+curl -u user:user --location 'http://localhost:8080/articles/articoli/cerca/descrizione/findus'
+curl -u both:both --location 'http://localhost:8080/articles/articoli/cerca/descrizione/findus'
+
+ADMIN
+curl -v --location 'http://localhost:8080/articles/articoli/inserisci' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic TWFyaW86VmVyeVNlY3JldFB3ZA==' \
+--data '{
+    "codArt": "123Test",
+	"descrizione": "ARTICOLO TEST",
+	"um":  "PZ",
+	"codStat":  " TEST",
+	"pzCart": 1,
+	"pesoNetto": 0,
+	"idStatoArt":  "1",
+	"dataCreaz":  "2023-09-26 ",
+	"famAssort": {
+	    "id": 1}
+	}'
+
+ADMIN
+curl -v --location 'http://localhost:8080/articles/articoli/inserisci' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic TWFyaW86VmVyeVNlY3JldFB3ZA==' \
+--data '{
+    "codArt": "123Test",
+	"descrizione": "ARTICOLO TEST modify",
+	"um":  "PZ",
+	"codStat":  " TEST",
+	"pzCart": 1,
+	"pesoNetto": 0,
+	"idStatoArt":  "1",
+	"dataCreaz":  "2023-09-26 ",
+	"famAssort": {
+	    "id": 1}
+	}'
+
+ADMIN
+curl -u admin:admin --location --request DELETE 'http://localhost:8080/articles/articoli/elimina/002000301' --data ''
+
+
+======================= Promo
+
+USER BOTH
+curl -u user:user --location 'http://localhost:8080/promo/promo/cerca/id/481AD25F-ED20-40FB'
+curl -u both:both --location 'http://localhost:8080/promo/promo/cerca/id/481AD25F-ED20-40FB'
+
+USER BOTH
+curl -u user:user --location 'http://localhost:8080/promo/promo/cerca/tutti'
+curl -u both:both --location 'http://localhost:8080/promo/promo/cerca/tutti'
+
+USER BOTH
+curl -u user:user --location 'http://localhost:8080/promo/prezzo/promo/codice/002000301'
+curl -u both:both --location 'http://localhost:8080/promo/prezzo/promo/codice/002000301'
+
+ADMIN
+curl --location 'http://localhost:8080/promo/promo/inserisci' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic TWFyaW86VmVyeVNlY3JldFB3ZA==' \
+--data '{"idPromo": "481AD25F-ED20-40FC",
+            "anno": 2022,
+            "codice": "TS01",
+            "descrizione": "PROMO TEST 1",
+            "dettPromo": [{ "id": "-1",
+            "riga": 1,
+            "codart": "002000301",
+            "codfid": null,
+            "inizio": "2023-01-01",
+            "fine": "2023-12-31",
+            "oggetto": "0,29",
+            "isfid": "Si",
+            "tipoPromo": {
+                "descrizione": "TAGLIO PREZZO",
+                "idTipoPromo": "1" }},
+    { "id": "-1",
+            "riga": 2,
+            "codart": "000087101",
+            "codfid": null,
+            "inizio": "2023-01-01",
+            "fine": "2023-12-31",
+            "oggetto": "1,99",
+            "isfid": "Si",
+            "tipoPromo": {
+            "descrizione": "TAGLIO PREZZO",
+            "idTipoPromo": "1"  } },
+            { "id": "-1",
+            "riga": 3,
+            "codart": "007288701",
+            "codfid": null,
+            "inizio": "2023-01-01",
+            "fine": "2023-12-31",
+            "oggetto": "3,29",
+            "isfid": "Si",
+            "tipoPromo": {
+            "descrizione": "TAGLIO PREZZO",
+            "idTipoPromo": "1"  } },
+            { "id": "-1",
+            "riga": 4,
+            "codart": "002000301",
+            "codfid": 67000028,
+            "inizio": "2023-01-01",
+            "fine": "2023-12-31",
+            "oggetto": "0,27",
+            "isfid": "Si",
+            "tipoPromo": {
+            "descrizione": "TAGLIO PREZZO",
+            "idTipoPromo": "1"  }},
+            { "id": "-1",
+            "riga": 5,
+            "codart": "000087101",
+            "codfid": null,
+            "inizio": "2023-09-01",
+            "fine": "2023-12-31",
+            "oggetto": "1,89",
+            "isfid": "Si",
+            "tipoPromo": {
+            "descrizione": "TAGLIO PREZZO",
+            "idTipoPromo": "1"  }}],
+            "depRifPromo": [
+                {"id": 4,
+                "idDeposito": "525"
+            }]}'
+
+ADMIN
+curl -u admin:admin --location --request DELETE 'http://localhost:8080/promo/promo/elimina/481AD25F-ED20-40FA'

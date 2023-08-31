@@ -20,9 +20,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 {
 	private static String REALM = "REAME";
-	
+
 	private static final String[] USER_MATCHER = { "/prezzo/promo/**", "/promo/cerca/**" };
-	private static final String[] ADMIN_MATCHER = { "/promo/inserisci/**", "/promo/elimina/**"};
+	private static final String[] ADMIN_MATCHER = { "/promo/inserisci", "/promo/elimina/**"};
 	private static final String[] AUTH_WHITELIST = {
 		"/api/",
 		"/api/**",
@@ -35,7 +35,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 		"/swagger-ui.html",
 		"/webjars/**"
 	};
-	
+
 	@Autowired
 	@Qualifier("customUserDetailsService")
 	private UserDetailsService userDetailsService;
@@ -53,15 +53,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 				.httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint()).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
-	
+
 	@Autowired
-	  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception 
+	  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception
 	  {
 	    	auth
 	    		.userDetailsService(userDetailsService)
 	    		.passwordEncoder(new BCryptPasswordEncoder());
 	  }
-	
+
 	@Bean
 	public AuthEntryPoint getBasicAuthEntryPoint()
 	{

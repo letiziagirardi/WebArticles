@@ -62,9 +62,8 @@ build_main() {
   # echo "command $command"
   #
 
-
-
-
+  pip install bcrypt
+  pip install click
 
 }
 
