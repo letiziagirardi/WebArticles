@@ -7,34 +7,8 @@ build_service() {
   cp target/*.jar docker/app.jar
 }
 
-
-# create_user(){
-#   # Prompt the user for userId
-#   read -p "Please enter userId: " userId
-#
-#   # Prompt the user for password
-#   read -s -p "Please enter password: " password
-#   echo
-#
-#   # Make the curl request with user input
-#   curl -X POST "http://localhost:8080/gestuser/utenti/inserisci" \
-#        -H "Content-Type: application/json" \
-#        -d "{
-#            \"userId\": \"$userId\",
-#            \"password\": \"$password\",
-#            \"attivo\": \"Si\",
-#            \"ruoli\": [
-#                \"USER\",
-#                \"ADMIN\"
-#            ]
-#        }" \
-#        -u "Admin:MagicaBula_2018"
-#
-# }
-
 build_main() {
   docker compose down
-#  docker builder prune -a -f  forcefully clean up unused build cache
   docker image prune -a -f
   echo "docker compose down: clean up"
 
@@ -56,14 +30,7 @@ build_main() {
   cd ..
   docker compose up -d
 
-  # # Prompt the user for input
-  # echo "Please enter the command: "
-  # read command
-  # echo "command $command"
-  #
-
   pip install bcrypt
-  pip install click
 
 }
 
@@ -71,28 +38,4 @@ case $1 in
   build)
     build_main
     ;;
-  a)
-    echo "Romanian"
-    ;;
-  Italy|"San Marino"|Switzerland|"Vatican City")
-    echo "Italian"
-    ;;
-  *)
-    echo "unknown"
-    ;;
 esac
-
-# case $command in
-#   createUser)
-#     create_user
-#     ;;
-#   )
-#     echo "Romanian"
-#     ;;
-#   Italy|"San Marino"|Switzerland|"Vatican City")
-#     echo "Italian"
-#     ;;
-#   *)
-#     echo "unknown"
-#     ;;
-# esac
