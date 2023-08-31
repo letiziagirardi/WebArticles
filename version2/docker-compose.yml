@@ -39,6 +39,7 @@ services:
         protocol: tcp
         mode: host
     environment:
+      SERVER_PORT: 5051
       GESTUSER_SRV-URL: http://gestuser:8019/utenti/cerca/userid/
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/alphashop?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       PRICE_SERVICE_URL: http://price:5071/prezzi/
@@ -83,6 +84,7 @@ services:
         protocol: tcp
         mode: host
     environment:
+      SERVER_PORT: 5071
       GESTUSER_SRV-URL: http://gestuser:8019/utenti/cerca/userid/
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/alphashop?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 
@@ -109,6 +111,7 @@ services:
       SPRING_DATA_MONGODB_USERNAME: admin # admin
       SPRING_DATA_MONGODB_PASSWORD: 123_Stella
       SPRING_DATA_MONGODB_DATABASE: admin
+      SERVER_PORT: 8019
 
   ### Container mongouser
   mongouser:
