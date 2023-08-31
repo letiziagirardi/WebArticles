@@ -1,0 +1,234 @@
+4 principle users are provided:
+|  Utente  |  password      |  role       |
+|----------|----------------|-------------|
+|  admin   |  admin         |  admin      |
+|  user    |  user          |  user       |
+|  both    |  both          |  admin-user |
+|  Letizia |  VerySecretPwd |  admin-user |
+
+% python cli.py --help
+
+usage: cli.py [-h] {signup,login,commands} ...
+
+WebArticle - Command Line Interface
+
+positional arguments:
+  {signup,login,commands}
+    signup              Create a new user
+    login               Log in with username and password
+    commands            Select and execute available commands based on your role
+
+options:
+  -h, --help            show this help message and exit
+
+% python cli.py signup
+Choose a username: Pippo
+Choose a password: Pluto
+Enter the password again: Pluto
+Enter role of the user :
+1. ADMIN
+2. USER
+3. ADMIN AND USER: 3
+New user:  {'userId': 'Pippo', 'password': 'Pluto', 'attivo': 'Si', 'ruoli': ['ADMIN', 'USER']}
+✔ User Pippo created
+
+% python cli.py login
+Enter username: Pippo
+Enter password: Pluto
+Password is correct.
+User exists.
+✔ Logged in
+
+% python cli.py commands
+Select command:
+1. insert_user
+2. search_user
+3. search_all_users
+4. delete_user
+5. search_article_by_ean
+6. search_article_by_codart
+7. search_article_by_description
+8. insert_article
+9. modify_article
+10. remove_article
+11. search_price_by_codart
+12. insert_modify_price
+13. search_all_promo
+14. search_promo_by_id
+15. search_available_promo
+16. insert_promo
+17. remove_promo
+exit. Exit
+
+Enter your choice: 1
+Insert User function
+Enter new username: Luigi
+Enter new password: Mario
+Enter role of the user : 1. Admin - 2. User - 3. Admin and User
+Select the correspondent number: 2
+Executing the following request:
+GET http://localhost:8080/gestuser/utenti/inserisci
+Headers: {'Authorization': 'Basic QWRtaW46TWFnaWNhQnVsYV8yMDE4', 'Content-Type': 'application/json'}
+Request Body:
+{'userId': 'Luigi', 'password': 'Mario', 'attivo': 'Si', 'ruoli': ['USER']}
+Response:
+201
+
+Enter your choice: 2
+Search User by userId
+Enter the userId: Letizia
+Executing the following request:
+GET http://localhost:8080/gestuser/utenti/cerca/userid/Letizia
+Headers: {'Authorization': 'Basic UmVhZFVzZXI6QmltQnVtQmFtXzIwMTg='}
+Response:
+{"id":"64ecea74800fda502046e082","userId":"Letizia","password":"$2a$10$39CxmldzySNlYtKl0DM5GOa7vOC8E9Y3ZQb7kJYsgJvrJDDjPW0F2","attivo":"Si","ruoli":["USER","ADMIN"]}
+
+Enter your choice: 3
+Search All Users
+Executing the following request:
+GET http://localhost:8080/gestuser/utenti/cerca/tutti
+Headers: {'Authorization': 'Basic UmVhZFVzZXI6QmltQnVtQmFtXzIwMTg='}
+Response:
+[{"id":"64ecea74800fda502046e082","userId":"Letizia","password":"$2a$10$39CxmldzySNlYtKl0DM5GOa7vOC8E9Y3ZQb7kJYsgJvrJDDjPW0F2","attivo":"Si","ruoli":["USER","ADMIN"]},{"id":"64ecf72a800fda502046e089","userId":"admin","password":"$2a$10$JlI10U0vZeiQ5kuavpj5mOnwbSgBdUDnwAF8f6Srj.fReULTqnr.a","attivo":"Si","ruoli":["ADMIN"]},{"id":"64ecf7a6800fda502046e08a","userId":"user","password":"$2a$10$dYHIVjcunIFoxvXsbvq4a.UlLAw0VzRWRWb9c9vj328a9ky7.0F6.","attivo":"Si","ruoli":["USER"]},{"id":"64ecf7c2800fda502046e08b","userId":"both","password":"$2a$10$6qIqL9PbseQevDBpsiY8YubAYHvkdbH92qjvBjw1Smb.GTtoAsrI6","attivo":"Si","ruoli":["ADMIN","USER"]},{"id":"64f053117263761a42192757","userId":"Carlo","password":"$2a$10$QynIn1rkeBs1W/pbOqdhEe6AQK71xb5YgslJXbEPBlu4686x8pxBK","attivo":"Si","ruoli":["USER"]}]
+
+Enter your choice: 4
+Remove User by userId
+Enter the userId: Luigi
+Executing the following request:
+DELETE http://localhost:8080/gestuser/utenti/elimina/Luigi
+Headers: {'Authorization': 'Basic QWRtaW46TWFnaWNhQnVsYV8yMDE4', 'Content-Type': 'application/json'}
+Response:
+{"code":"200 OK","message":"Delete User Luigi Done"}
+
+Enter your choice: 5
+Search Article by Ean
+Enter the Ean: 0000099200992
+Executing the following request:
+GET http://localhost:8080/articles/articoli/cerca/ean/0000099200992
+Headers: {'Authorization': 'Basic UGlwcG86UGx1dG8='}
+Response:
+{"codArt":"002560001","descrizione":"VINO S.E M.TORBAT.ALGHERO CL75","um":"PZ","codStat":"          ","pzCart":6,"pesoNetto":0.75,"idStatoArt":"1","dataCreaz":"2010-06-14","prezzo":5.17,"barcode":[{"barcode":"8006725100027","idTipoArt":"CP"},{"barcode":"8006725102137","idTipoArt":"CP"},{"barcode":"0000099200992","idTipoArt":"CP"},{"barcode":"8006725101741","idTipoArt":"CP"},{"barcode":"99200992","idTipoArt":"CP"},{"barcode":"8006725101734","idTipoArt":"CP"}],"famAssort":{"id":1,"descrizione":"DROGHERIA ALIMENTARE"},"ingredienti":null,"iva":{"idIva":22,"descrizione":"IVA RIVENDITA 22%","aliquota":22}}
+
+Enter your choice: 6
+Search Article by CodArt
+Enter the CodArt: 002000301
+Executing the following request:
+GET http://localhost:8080/articles/articoli/cerca/codice/002000301
+Headers: {'Authorization': 'Basic UGlwcG86UGx1dG8='}
+Response:
+{"codArt":"002000301","descrizione":"prova 2 PUT","um":"PZ","codStat":" TEST","pzCart":1,"pesoNetto":0.0,"idStatoArt":"1","dataCreaz":"2023-08-30","prezzo":3.4,"barcode":[],"famAssort":{"id":1,"descrizione":"DROGHERIA ALIMENTARE"},"ingredienti":null,"iva":null}
+
+Enter your choice: 7
+Search Article by Description
+Enter the Description: findus
+Executing the following request:
+GET http://localhost:8080/articles/articoli/cerca/descrizione/findus
+Headers: {'Authorization': 'Basic UGlwcG86UGx1dG8='}
+Response:
+[{"codArt":"003461801","descrizione":"FINDUS FIL PLATESSA IMPANATI 275 GR","um":"PZ","codStat":"          ","pzCart":10,"pesoNetto":0.275,"idStatoArt":"1","dataCreaz":"2010-06-14","prezzo":7.04,"barcode":[{"barcode":"8722700408437","idTipoArt":"CP"}],"famAssort":{"id":40,"descrizione":"SURGELATI"},"ingredienti":null,"iva":{"idIva":10,"descrizione":"IVA RIVENDITA 10%","aliquota":10}},{"codArt":"005371103","descrizione":"FINDUS SOFF CORDON BLEU 220 GR.","um":"PZ","codStat":"          ","pzCart":10,"pesoNetto":0.22,"idStatoArt":"1","dataCreaz":"2011-07-07","prezzo":3.95,"barcode":[{"barcode":"8051084004226","idTipoArt":"CP"}],"famAssort":{"id":40,"descrizione":"SURGELATI"},...,{"codArt":"057549002","descrizione":"FINDUS CROCCOLE SPINACI GR.400","um":"PZ","codStat":"          ","pzCart":8,"pesoNetto":0.4,"idStatoArt":"2","dataCreaz":"2010-06-14","prezzo":6.18,"barcode":[{"barcode":"8001190104549","idTipoArt":"CP"},{"barcode":"8051084005827","idTipoArt":"CP"},{"barcode":"8051084005834","idTipoArt":"CP"}],"famAssort":{"id":40,"descrizione":"SURGELATI"},"ingredienti":null,"iva":{"idIva":10,"descrizione":"IVA RIVENDITA 10%","aliquota":10}}]
+
+Enter your choice: 8
+Insert Article
+Enter article details:
+Enter codArt: TestInsertArticle
+descrizione: TestInsertArticle
+um (PZ/KG): PZ
+pzCart: 2
+pesoNetto: 0.78
+Executing the following request:
+POST http://localhost:8080/articles/articoli/inserisci
+Headers: {'Authorization': 'Basic UGlwcG86UGx1dG8=', 'Content-Type': 'application/json'}
+Request Body:
+{'codArt': 'TestInsertArticle', 'descrizione': 'TestInsertArticle', 'um': 'PZ', 'pzCart': 2, 'idStatoArt': 1, 'pesoNetto': 0.78, 'dataCreaz': '2023-08-31', 'famAssort': {'id': 1}}
+Response:
+201
+
+Enter your choice: 9
+Modify Article
+Enter codArt: TestInsertArticle
+Enter new descrizione: Test: modification of Article Description
+Executing the following request:
+PUT http://localhost:8080/articles/articoli/modifica
+Headers: {'Authorization': 'Basic UGlwcG86UGx1dG8=', 'Content-Type': 'application/json'}
+Request Body:
+{'codArt': 'TestInsertArticle', 'descrizione': 'Test: modification of Article Description', 'um': 'PZ', 'codStat': ' TEST', 'pzCart': 1, 'pesoNetto': 0, 'idStatoArt': '1', 'dataCreaz': '2023-08-31', 'famAssort': {'id': 1}}
+Response:
+201
+
+Enter your choice: 10
+Remove Article
+Enter the CodArt: TestInsertArticle
+Executing the following request:
+DELETE http://localhost:8080/articles/articoli/elimina/TestInsertArticle
+Headers: {'Authorization': 'Basic UGlwcG86UGx1dG8='}
+Response:
+{"code":"200 OK","message":"Remove article TestInsertArticle Done"}
+
+Enter your choice: 11
+Search Price of Article by CodArt
+Enter the CodArt: 002000301
+Executing the following request:
+GET http://localhost:8080/price/prezzi/cerca/codice/002000301
+Headers: {'Authorization': 'Basic UGlwcG86UGx1dG8='}
+Response:
+{"id":13816,"codArt":"002000301","idList":"1","prezzo":3.4}
+
+Enter your choice: 12
+Insert Price if not exists, modify it otherwise
+Enter codArt: 002000301
+Enter prezzo: 10.54
+Executing the following request:
+POST http://localhost:8080/price/prezzi/inserisci
+Headers: {'Authorization': 'Basic UGlwcG86UGx1dG8=', 'Content-Type': 'application/json'}
+Request Body:
+{'codArt': '002000301', 'idList': 1, 'prezzo': 10.54}
+Response:
+201
+
+Enter your choice: 13
+Search All Promo
+Executing the following request:
+GET http://localhost:8080/promo/promo/cerca/tutti
+Headers: {'Authorization': 'Basic UGlwcG86UGx1dG8='}
+Response:
+[{"idPromo":"481AD25F-ED20-40FA","anno":2018,"codice":"TS01","descrizione":"PROMO TEST 1","dettPromo":[{"id":17,"riga":1,"codart":"002000301","codfid":null,"inizio":"2022-10-01","fine":"2023-12-31","oggetto":"0,29","isfid":"Si","tipoPromo":{"idTipoPromo":"1","descrizione":"TAGLIO PREZZO"}},{"id":18,"riga":2,"codart":"000087101","codfid":null,"inizio":"2022-10-01","fine":"2023-12-31","oggetto":"1,99","isfid":"Si","tipoPromo":{"idTipoPromo":"1","descrizione":"TAGLIO PREZZO"}},{"id":19,"riga":3,"codart":"007288701","codfid":null,"inizio":"2022-10-01","fine":"2023-12-31","oggetto":"3,29","isfid":"Si","tipoPromo":{"idTipoPromo":"1","descrizione":"TAGLIO PREZZO"}},{"id":20,"riga":4,"codart":"002000301","codfid":"67000028","inizio":"2022-10-01","fine":"2023-12-31","oggetto":"0,27","isfid":"Si","tipoPromo":{"idTipoPromo":"1","descrizione":"TAGLIO PREZZO"}},{"id":21,"riga":5,"codart":"000087101","codfid":null,"inizio":"2018-09-01","fine":"2023-12-31","oggetto":"1,89","isfid":"Si","tipoPromo":{"idTipoPromo":"1","descrizione":"TAGLIO PREZZO"}}],"depRifPromo":[{"id":5,"idDeposito":525}]}]
+
+Enter your choice: 14
+Search Promo by idPromo
+Enter the idPromo: 481AD25F-ED20-40FA
+Executing the following request:
+GET http://localhost:8080/promo/promo/cerca/id/481AD25F-ED20-40FA
+Headers: {'Authorization': 'Basic UGlwcG86UGx1dG8='}
+Response:
+{"idPromo":"481AD25F-ED20-40FA","anno":2018,"codice":"TS01","descrizione":"PROMO TEST 1","dettPromo":[{"id":17,"riga":1,"codart":"002000301","codfid":null,"inizio":"2022-10-01","fine":"2023-12-31","oggetto":"0,29","isfid":"Si","tipoPromo":{"idTipoPromo":"1","descrizione":"TAGLIO PREZZO"}},{"id":18,"riga":2,"codart":"000087101","codfid":null,"inizio":"2022-10-01","fine":"2023-12-31","oggetto":"1,99","isfid":"Si","tipoPromo":{"idTipoPromo":"1","descrizione":"TAGLIO PREZZO"}},{"id":19,"riga":3,"codart":"007288701","codfid":null,"inizio":"2022-10-01","fine":"2023-12-31","oggetto":"3,29","isfid":"Si","tipoPromo":{"idTipoPromo":"1","descrizione":"TAGLIO PREZZO"}},{"id":20,"riga":4,"codart":"002000301","codfid":"67000028","inizio":"2022-10-01","fine":"2023-12-31","oggetto":"0,27","isfid":"Si","tipoPromo":{"idTipoPromo":"1","descrizione":"TAGLIO PREZZO"}},{"id":21,"riga":5,"codart":"000087101","codfid":null,"inizio":"2018-09-01","fine":"2023-12-31","oggetto":"1,89","isfid":"Si","tipoPromo":{"idTipoPromo":"1","descrizione":"TAGLIO PREZZO"}}],"depRifPromo":[{"id":5,"idDeposito":525}]}
+
+Enter your choice: 15
+Search Promo by CodArt
+Enter the CodArt of the required Article: 002000301
+Executing the following request:
+GET http://localhost:8080/promo/prezzo/promo/codice/002000301
+Headers: {'Authorization': 'Basic UGlwcG86UGx1dG8='}
+Response:
+0.27
+
+Enter your choice: 16
+Add a new Promo
+Enter the idPromo: 481AD25F-ED20-40FD
+Enter codart: 002000301
+Enter price: 0.14
+Executing the following request:
+POST http://localhost:8080/promo/promo/inserisci
+Headers: {'Authorization': 'Basic UGlwcG86UGx1dG8=', 'Content-Type': 'application/json'}
+Request Body:
+{'idPromo': '481AD25F-ED20-40FD', 'anno': 2023, 'codice': 'TS01', 'descrizione': 'PROMO TEST 002000301', 'dettPromo': [{'id': '-1', 'riga': 1, 'codart': '002000301', 'codfid': None, 'inizio': '2023-01-01', 'fine': '2023-12-31', 'oggetto': '0.14', 'isfid': 'Si', 'tipoPromo': {'descrizione': 'TAGLIO PREZZO', 'idTipoPromo': '1'}}], 'depRifPromo': [{'id': 4, 'idDeposito': '525'}]}
+Response:
+201
+
+Enter your choice: 17
+Remove Promo by Id
+Enter the Id: 481AD25F-ED20-40FD
+Executing the following request:
+DELETE http://localhost:8080/promo/promo/elimina/481AD25F-ED20-40FD
+Headers: {'Authorization': 'Basic UGlwcG86UGx1dG8='}
+Response:
+{"code":"200 OK","message":"Promotion Deletion 481AD25F-ED20-40FD Executed Successfully "}

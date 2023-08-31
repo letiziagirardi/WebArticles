@@ -1,0 +1,153 @@
+version: '3.3'
+
+services:
+  ### MySql
+  mysql:
+    image: mysql:latest
+    restart: unless-stopped
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./mysqlData/:/var/lib/mysql
+      - ./DB/schema.sql:/docker-entrypoint-initdb.d/database_dump.sql
+    ports:
+      - target: 3307
+        published: 3307
+        protocol: tcp
+        mode: host
+    environment:
+      MYSQL_ROOT_PASSWORD: '123_Stella'
+      MYSQL_DATABASE: 'Alphashop'
+      MYSQL_USER: 'Letizia'
+      MYSQL_PASSWORD: '123_Stella'
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_TCP_PORT: 3307
+
+  ### Container articles
+  articles:
+    build: articles_web_service_v2/docker
+    container_name: articles
+    depends_on:
+      - mysql
+    ports:
+      - target: 5051
+        published: 5051
+        protocol: tcp
+        mode: host
+      - target: 9051
+        published: 9051
+        protocol: tcp
+        mode: host
+    environment:
+      GESTUSER_SRV-URL: http://gestuser:8019/utenti/cerca/userid/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/alphashop?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      PRICE_SERVICE_URL: http://price:5071/prezzi/
+      PROMO_SERVICE_URL: http://promo:5062/promo/
+
+  ### Container promo
+  promo:
+    build: promo_web_service_v2/docker
+    container_name: promo
+    depends_on:
+      - mysql
+    ports:
+      - target: 5062
+        published: 5062
+        protocol: tcp
+        mode: host
+      - target: 9062
+        published: 9062
+        protocol: tcp
+        mode: host
+    environment:
+      SERVER_PORT: 5062
+      GESTUSER_SRV-URL: http://gestuser:8019/utenti/cerca/userid/
+      GESTUSER_USER-ID: ReadUser
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/alphashop?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      PRICE_SERVICE_URL: http://price:5071/prezzi/
+
+
+  ### Container price
+  price:
+    build: priceart_web_service_v2/docker
+    container_name: price
+    depends_on:
+      - mysql
+    ports:
+      - target: 5071
+        published: 5071
+        protocol: tcp
+        mode: host
+      - target: 9071
+        published: 9071
+        protocol: tcp
+        mode: host
+    environment:
+      GESTUSER_SRV-URL: http://gestuser:8019/utenti/cerca/userid/
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/alphashop?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+
+
+  ### Container gestuser
+  gestuser:
+    build: gestuser/docker
+    container_name: gestuser
+    ports:
+      - target: 8019
+        published: 8019
+        protocol: tcp
+        mode: host
+      - target: 9019
+        published: 9019
+        protocol: tcp
+        mode: host
+    depends_on:
+      - mongouser
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongouser
+      SPRING_DATA_MONGODB_PORT: 27018
+      SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+      SPRING_DATA_MONGODB_USERNAME: admin # admin
+      SPRING_DATA_MONGODB_PASSWORD: 123_Stella
+      SPRING_DATA_MONGODB_DATABASE: admin
+
+  ### Container mongouser
+  mongouser:
+    image: 'mongo:latest'
+    container_name: mongouser
+    restart: always
+    volumes:
+      - ./mongo/:/etc/mongo
+      - ./database/:/data/db
+    command: mongod --port 27018 --bind_ip 0.0.0.0
+    ports:
+      - target: 27018
+        published: 27018
+        protocol: tcp
+    environment:
+     MONGO_INITDB_ROOT_USERNAME: admin
+     MONGO_INITDB_ROOT_PASSWORD: 123_Stella
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - target: 8081
+        published: 8081
+        protocol: tcp
+    environment:
+     ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+     ME_CONFIG_MONGODB_ADMINPASSWORD: 123_Stella
+     ME_CONFIG_MONGODB_URL: mongodb://admin:123_Stella@mongouser:27018/
+    depends_on:
+     - mongouser
+
+  ### Container gateway
+  gateway:
+    build: gateway/docker
+    container_name: gateway
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: host

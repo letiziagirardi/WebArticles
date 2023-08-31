@@ -8,7 +8,7 @@ In order to build the correct environment, from the root folder of the project, 
 
 ```
 cd version2
-bash shop.sh build 
+bash shop.sh build
 ```
 
 In order to effetivelly use the project, from the current folder, please run:
@@ -27,7 +27,7 @@ The project WebArticles is a comprehensive initiative designed to offer an advan
 The service employs a microservices architecture, consisting in the operation of indipendent microservises whhich operate to fulfill specific roles:
 * **Articles Service**: Manages articles and interacts with the price and promo services to provide article information and related price.
 * **Promo Service**: This service handles promotional activities, providing active promos.
-* **Price Service**: Deals with price-related information. Receives requests from the articles service. 
+* **Price Service**: Deals with price-related information. Receives requests from the articles service.
 * **Gestuser Service**: This service is responsible for user authentication and authorization, providing access control to other services. Moreover, it is possible to create and managing users' profiles.
 
 Finally, In order to simplify client interaction, handle authentication and authorization across all microservices and distribute incoming requests across multiple instances of services, the API Gateway service has been implemented.
@@ -58,5 +58,5 @@ A user of the WebArticle service can perform the following workflow:
        - Adding a new promotion.
        - Removing a promotion.
 
-  ## Documentation 
-Each service offers a dedicated API documentation. To access this documentation, simply navigate to the /swagger-ui page of the respective service. For instance, to explore the API documentation for articles service, visit http://localhost:8080/articles/swagger-ui. 
+  ## Documentation
+Each service offers a dedicated API documentation. To access this documentation, simply navigate to the /swagger-ui page of the respective service. For instance, to explore the API documentation for articles service, visit http://localhost:8080/articles/swagger-ui.
