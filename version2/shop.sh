@@ -30,12 +30,17 @@ build_main() {
   cd ..
   docker compose up -d
 
+
   pip install bcrypt
+  pip install click
 
 }
 
 case $1 in
   build)
     build_main
+    ;;
+  *)
+    echo "unknown"
     ;;
 esac

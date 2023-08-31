@@ -5,6 +5,8 @@ import base64
 import bcrypt
 import subprocess
 
+authenticated = False  # Global flag to track user authentication status
+
 def check_user_existence(username, password):
     url = f"http://localhost:8080/gestuser/utenti/cerca/userid/{username}"
     headers = {"Authorization": f"Basic UmVhZFVzZXI6QmltQnVtQmFtXzIwMTg="}
@@ -13,14 +15,14 @@ def check_user_existence(username, password):
 
     if response.status_code == 200:
         if len(response.content) == 0:
-            return False
+            return False  # User doesn't exist
         else:
             data = response.json()
-            hashed_password_from_server = data.get("password")
+            hashed_password_from_server = data.get("password")  # Replace with actual key for the hashed password
 
             if bcrypt.checkpw(password.encode(), hashed_password_from_server.encode()):
                 print("Password is correct.")
-                return data.get("ruoli")
+                return data.get("ruoli")  # Return the roles from the server
             else:
                 print("Password is incorrect.")
                 return False
@@ -91,6 +93,7 @@ def login():
     if ruoli:
         print("User exists.")
 
+        # Generate a JWT token here using the ruoli information
         token = base64.b64encode(f"{username}:{password}".encode()).decode()
 
          # Map roles to numerical values
