@@ -12,21 +12,21 @@
         },
         {
             "type": "java",
-            "name": "Application",
+            "name": "Articles debug",
             "request": "launch",
             "mainClass": "com.webapp.Application",
             "projectName": "articles_web_service"
         },
         {
             "type": "java",
-            "name": "Application(1)",
+            "name": "gestuser debug",
             "request": "launch",
             "mainClass": "com.webapp.Application",
             "projectName": "gestuser"
         },
         {
             "type": "java",
-            "name": "Application(2)",
+            "name": "price debug",
             "request": "launch",
             "mainClass": "com.webapp.Application",
             "projectName": "priceart_web_service"

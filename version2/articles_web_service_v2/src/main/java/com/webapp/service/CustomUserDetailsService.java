@@ -45,8 +45,9 @@ public class CustomUserDetailsService implements UserDetailsService
 		{
 			utente = this.GetHttpValue(UserId);
 		}
-		catch (NoConnexException e)
+		catch (Exception e)
 		{
+			logger.error(e.getMessage() ,e );
 
 		}
 
