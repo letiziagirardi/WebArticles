@@ -12,6 +12,13 @@ build_main() {
   docker image prune -a -f
   echo "docker compose down: clean up"
 
+  if [ -d "database" ]; then
+    rm -rd "database"
+  fi
+
+  mkdir "database"
+  unzip DB/database
+
   cd articles_web_service_v2
   build_service "articles"
 
@@ -30,9 +37,8 @@ build_main() {
   cd ..
   docker compose up -d
 
-
   pip install bcrypt
-  pip install click
+
 
 }
 
